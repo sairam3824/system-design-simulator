@@ -1,0 +1,111 @@
+// Prisma schema for AI System Design Simulator
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String?
+  avatar        String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  profile       Profile?
+  resumes       Resume[]
+  interviews    Interview[]
+}
+
+model Profile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  bio             String?
+  yearsExperience Int?
+  skills          String   @default("[]") // JSON array stored as string
+  targetCompanies String   @default("[]") // JSON array stored as string
+  targetRole      String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Resume {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  fileName    String
+  content     String   // Full text content of resume
+  analysis    String?  // JSON object with AI analysis
+
+  // ATS Score Data
+  atsScore    Int?     // Total ATS score (0-100)
+  atsBreakdown String? // JSON: { contactInfo, structure, experience, keywords, impact }
+  atsFeedback String?  // JSON array of feedback strings
+  keywords    String?  // JSON array of extracted keywords
+  softSkills  String?  // JSON array of soft skills
+  predictedRoles String? // JSON array of predicted job roles
+
+  uploadedAt  DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Interview {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  topic       String    // e.g., "Design Twitter", "Design Uber"
+  difficulty  String    @default("medium") // easy, medium, hard
+  status      String    @default("pending") // pending, in_progress, completed
+
+  startedAt   DateTime?
+  endedAt     DateTime?
+  createdAt   DateTime  @default(now())
+
+  messages    Message[]
+  score       Score?
+}
+
+model Message {
+  id          String    @id @default(cuid())
+  interviewId String
+  interview   Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+
+  role        String    // user, assistant, system
+  content     String
+
+  timestamp   DateTime  @default(now())
+}
+
+model Score {
+  id                      String    @id @default(cuid())
+  interviewId             String    @unique
+  interview               Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+
+  // 6 Industry-Standard FAANG Evaluation Dimensions (1-4 scale)
+  requirementsClarification Int     @default(0)
+  highLevelDesign           Int     @default(0)
+  detailedDesign            Int     @default(0)
+  scalability               Int     @default(0)
+  tradeoffs                 Int     @default(0)
+  communication             Int     @default(0)
+
+  // Calculated fields
+  overallScore              Float   @default(0) // Weighted average
+  passStatus                Boolean @default(false)
+
+  // Detailed feedback as JSON
+  feedback                  String  @default("{}") // JSON with per-dimension comments
+
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
