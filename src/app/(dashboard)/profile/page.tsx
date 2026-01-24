@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ProfileForm } from "@/components/profile/profile-form";
+import { PasswordForm } from "@/components/profile/password-form";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -34,13 +35,14 @@ export default async function ProfilePage() {
         profile={
           profile
             ? {
-                ...profile,
-                skills: JSON.parse(profile.skills),
-                targetCompanies: JSON.parse(profile.targetCompanies),
-              }
+              ...profile,
+              skills: JSON.parse(profile.skills),
+              targetCompanies: JSON.parse(profile.targetCompanies),
+            }
             : null
         }
       />
+      <PasswordForm />
     </div>
   );
 }

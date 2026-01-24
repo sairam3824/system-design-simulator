@@ -45,6 +45,8 @@ model Resume {
   fileName    String
   content     String   // Full text content of resume
   analysis    String?  // JSON object with AI analysis
+  filePath    String?  // Local path to the stored resume file
+
 
   // ATS Score Data
   atsScore    Int?     // Total ATS score (0-100)

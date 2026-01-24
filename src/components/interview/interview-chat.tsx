@@ -653,7 +653,7 @@ export function InterviewChat({
                     }`}>
                       <div className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</div>
                     </div>
-                    <span className="text-xs text-muted-foreground mt-1 px-2">
+                    <span className="text-xs text-muted-foreground mt-1 px-2" suppressHydrationWarning>
                       {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>

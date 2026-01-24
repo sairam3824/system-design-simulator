@@ -121,7 +121,7 @@ export function ResumeCard({ resume }: ResumeCardProps) {
         <div className="flex-1">
           <CardTitle className="text-lg">{resume.fileName}</CardTitle>
           <CardDescription>
-            Uploaded on {new Date(resume.uploadedAt).toLocaleDateString()}
+            Uploaded on {new Date(resume.uploadedAt).toLocaleDateString("en-US")}
           </CardDescription>
         </div>
 

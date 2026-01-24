@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { writeFile } from "fs/promises";
+import { join } from "path";
 
 const RESUME_MATCHER_URL = process.env.RESUME_MATCHER_URL || "http://localhost:8000";
 
@@ -29,6 +31,18 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Save file locally
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    // Create unique filename
+    const uniqueFileName = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
+    const uploadDir = join(process.cwd(), "uploads");
+    const filePath = join(uploadDir, uniqueFileName);
+    const relativeFilePath = `/uploads/${uniqueFileName}`;
+
+    await writeFile(filePath, buffer);
 
     // Send PDF to resume-matcher service
     const matcherFormData = new FormData();
@@ -60,6 +74,7 @@ export async function POST(request: NextRequest) {
       data: {
         userId: session.user.id,
         fileName: file.name,
+        filePath: relativeFilePath,
         content,
         atsScore,
         atsBreakdown,
