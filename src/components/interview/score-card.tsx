@@ -150,44 +150,91 @@ function CircularProgress({ value, max = 4 }: { value: number; max?: number }) {
 export function ScoreCard({ score }: ScoreCardProps) {
   return (
     <div className="space-y-6">
-      {/* Hero Section - Overall Score */}
+      {/* Hero Section - Compact Overall Score */}
       <Card className="overflow-hidden border-0 shadow-lg">
         <div className={`relative ${score.passStatus ? "bg-gradient-to-br from-emerald-500/5 via-cyan-500/5 to-blue-500/5" : "bg-gradient-to-br from-orange-500/5 via-red-500/5 to-pink-500/5"}`}>
           <div className="absolute inset-0 bg-grid-white/5" />
-          <CardContent className="pt-8 pb-8">
-            <div className="flex flex-col items-center text-center space-y-4">
-              <CircularProgress value={score.overallScore} />
-
-              <div className="space-y-2">
-                <Badge
-                  variant={score.passStatus ? "default" : "destructive"}
-                  className={`px-4 py-1.5 text-sm font-semibold ${
-                    score.passStatus
-                      ? "bg-emerald-500/90 hover:bg-emerald-500"
-                      : "bg-red-500/90 hover:bg-red-500"
-                  }`}
-                >
-                  {score.passStatus ? (
-                    <CheckCircle2 className="w-4 h-4 mr-1.5" />
-                  ) : (
-                    <XCircle className="w-4 h-4 mr-1.5" />
-                  )}
-                  {score.passStatus ? "PASSED" : "NEEDS IMPROVEMENT"}
-                </Badge>
-
-                <h3 className={`text-xl font-semibold ${getScoreColor(score.overallScore)}`}>
-                  {getScoreLabel(score.overallScore)}
-                </h3>
-                <p className="text-sm text-muted-foreground max-w-md">
-                  {getScoreDescription(score.overallScore)}
-                </p>
+          <CardContent className="py-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                <CircularProgress value={score.overallScore} />
+                <div className="space-y-2">
+                  <Badge
+                    variant={score.passStatus ? "default" : "destructive"}
+                    className={`px-4 py-1.5 text-sm font-semibold ${
+                      score.passStatus
+                        ? "bg-emerald-500/90 hover:bg-emerald-500"
+                        : "bg-red-500/90 hover:bg-red-500"
+                    }`}
+                  >
+                    {score.passStatus ? (
+                      <CheckCircle2 className="w-4 h-4 mr-1.5" />
+                    ) : (
+                      <XCircle className="w-4 h-4 mr-1.5" />
+                    )}
+                    {score.passStatus ? "PASSED" : "NEEDS IMPROVEMENT"}
+                  </Badge>
+                  <h3 className={`text-xl font-semibold ${getScoreColor(score.overallScore)}`}>
+                    {getScoreLabel(score.overallScore)}
+                  </h3>
+                  <p className="text-sm text-muted-foreground max-w-md">
+                    {getScoreDescription(score.overallScore)}
+                  </p>
+                </div>
               </div>
             </div>
           </CardContent>
         </div>
       </Card>
 
-      {/* Dimension Scores - Grid Layout */}
+      {/* Detailed Feedback by Dimension - MOVED UP & HIGHLIGHTED */}
+      <Card className="border-2 border-primary/30 shadow-lg bg-gradient-to-br from-primary/5 to-violet-500/5">
+        <CardHeader className="pb-4 border-b border-primary/10">
+          <div className="flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-primary/20 ring-2 ring-primary/30">
+              <Layers className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <CardTitle className="text-lg text-primary">Detailed Analysis</CardTitle>
+              <CardDescription>In-depth feedback for each evaluation dimension</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-4">
+          <div className="space-y-4">
+            {dimensions.map((dim, index) => {
+              const dimScore = score[dim.key as keyof Score] as number;
+              const Icon = dim.icon;
+              return (
+                <div key={dim.key}>
+                  <div className="flex items-start gap-4 p-4 rounded-xl bg-background/80 border border-border/50 hover:border-primary/30 transition-colors">
+                    <div className={`p-2.5 rounded-lg shrink-0 ${getScoreBgColor(dimScore)} ring-1 ring-inset ${dimScore >= 2.5 ? 'ring-emerald-500/20' : 'ring-red-500/20'}`}>
+                      <Icon className={`w-5 h-5 ${getScoreColor(dimScore)}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <h4 className="font-semibold">{dim.label}</h4>
+                          <span className="text-xs text-muted-foreground">Weight: {dim.weight}</span>
+                        </div>
+                        <Badge variant="outline" className={`${getScoreColor(dimScore)} border-current`}>
+                          {dimScore.toFixed(1)}/4.0
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {score.feedback[dim.key as keyof typeof score.feedback]}
+                      </p>
+                    </div>
+                  </div>
+                  {index < dimensions.length - 1 && <Separator className="my-4 bg-primary/10" />}
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Performance Breakdown - Compact Grid */}
       <Card className="border shadow-sm">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-2">
@@ -195,7 +242,7 @@ export function ScoreCard({ score }: ScoreCardProps) {
               <Target className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-lg">Performance Breakdown</CardTitle>
+              <CardTitle className="text-lg">Score Breakdown</CardTitle>
               <CardDescription>
                 Evaluated against FAANG interview standards
               </CardDescription>
@@ -203,31 +250,26 @@ export function ScoreCard({ score }: ScoreCardProps) {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-3 grid-cols-2 lg:grid-cols-3">
             {dimensions.map((dim) => {
               const dimScore = score[dim.key as keyof Score] as number;
               const Icon = dim.icon;
               return (
                 <div
                   key={dim.key}
-                  className={`p-4 rounded-xl border transition-all hover:shadow-md ${getScoreBgColor(dimScore)}`}
+                  className={`p-3 rounded-xl border transition-all hover:shadow-md ${getScoreBgColor(dimScore)}`}
                 >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg ${getScoreBgColor(dimScore)}`}>
-                        <Icon className={`w-4 h-4 ${getScoreColor(dimScore)}`} />
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-sm">{dim.label}</h4>
-                        <span className="text-xs text-muted-foreground">Weight: {dim.weight}</span>
-                      </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Icon className={`w-4 h-4 ${getScoreColor(dimScore)}`} />
+                      <span className="font-medium text-xs truncate">{dim.label}</span>
                     </div>
-                    <div className={`text-lg font-bold ${getScoreColor(dimScore)}`}>
+                    <div className={`text-sm font-bold ${getScoreColor(dimScore)}`}>
                       {dimScore.toFixed(1)}
                     </div>
                   </div>
                   <div className="relative">
-                    <div className="h-2 w-full bg-muted/30 rounded-full overflow-hidden">
+                    <div className="h-1.5 w-full bg-muted/30 rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all duration-700 ${getProgressColor(dimScore)}`}
                         style={{ width: `${(dimScore / 4) * 100}%` }}
@@ -241,26 +283,26 @@ export function ScoreCard({ score }: ScoreCardProps) {
         </CardContent>
       </Card>
 
-      {/* Feedback Summary - Two Column Layout */}
-      <div className="grid gap-6 md:grid-cols-2">
+      {/* Feedback Summary - Strengths & Improvements */}
+      <div className="grid gap-4 grid-cols-2">
         {/* Strengths */}
         <Card className="border shadow-sm border-emerald-500/20">
-          <CardHeader className="pb-3">
+          <CardHeader className="pb-2 pt-4">
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-emerald-500/10">
-                <Sparkles className="w-5 h-5 text-emerald-500" />
+              <div className="p-1.5 rounded-lg bg-emerald-500/10">
+                <Sparkles className="w-4 h-4 text-emerald-500" />
               </div>
-              <CardTitle className="text-lg text-emerald-600 dark:text-emerald-400">
+              <CardTitle className="text-base text-emerald-600 dark:text-emerald-400">
                 Strengths
               </CardTitle>
             </div>
           </CardHeader>
-          <CardContent>
-            <ul className="space-y-3">
+          <CardContent className="pt-2">
+            <ul className="space-y-2">
               {score.feedback.strengths.map((s, i) => (
-                <li key={i} className="flex items-start gap-3 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 mt-0.5 shrink-0" />
-                  <span className="text-sm">{s}</span>
+                <li key={i} className="flex items-start gap-2 p-2 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <span className="text-xs leading-relaxed">{s}</span>
                 </li>
               ))}
             </ul>
@@ -269,22 +311,22 @@ export function ScoreCard({ score }: ScoreCardProps) {
 
         {/* Areas for Improvement */}
         <Card className="border shadow-sm border-amber-500/20">
-          <CardHeader className="pb-3">
+          <CardHeader className="pb-2 pt-4">
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-amber-500/10">
-                <AlertTriangle className="w-5 h-5 text-amber-500" />
+              <div className="p-1.5 rounded-lg bg-amber-500/10">
+                <AlertTriangle className="w-4 h-4 text-amber-500" />
               </div>
-              <CardTitle className="text-lg text-amber-600 dark:text-amber-400">
+              <CardTitle className="text-base text-amber-600 dark:text-amber-400">
                 Areas to Improve
               </CardTitle>
             </div>
           </CardHeader>
-          <CardContent>
-            <ul className="space-y-3">
+          <CardContent className="pt-2">
+            <ul className="space-y-2">
               {score.feedback.improvements.map((s, i) => (
-                <li key={i} className="flex items-start gap-3 p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
-                  <ArrowUpRight className="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
-                  <span className="text-sm">{s}</span>
+                <li key={i} className="flex items-start gap-2 p-2 rounded-lg bg-amber-500/5 border border-amber-500/10">
+                  <ArrowUpRight className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                  <span className="text-xs leading-relaxed">{s}</span>
                 </li>
               ))}
             </ul>
@@ -294,62 +336,18 @@ export function ScoreCard({ score }: ScoreCardProps) {
 
       {/* Overall Feedback */}
       <Card className="border shadow-sm">
-        <CardHeader className="pb-3">
+        <CardHeader className="pb-2 pt-4">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-blue-500/10">
-              <MessageSquare className="w-5 h-5 text-blue-500" />
+            <div className="p-1.5 rounded-lg bg-blue-500/10">
+              <MessageSquare className="w-4 h-4 text-blue-500" />
             </div>
-            <CardTitle className="text-lg">Overall Assessment</CardTitle>
+            <CardTitle className="text-base">Overall Assessment</CardTitle>
           </div>
         </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground leading-relaxed">
+        <CardContent className="pt-2">
+          <p className="text-sm text-muted-foreground leading-relaxed">
             {score.feedback.overallFeedback}
           </p>
-        </CardContent>
-      </Card>
-
-      {/* Detailed Feedback by Dimension */}
-      <Card className="border shadow-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-violet-500/10">
-              <Layers className="w-5 h-5 text-violet-500" />
-            </div>
-            <div>
-              <CardTitle className="text-lg">Detailed Feedback</CardTitle>
-              <CardDescription>In-depth analysis for each dimension</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {dimensions.map((dim, index) => {
-              const dimScore = score[dim.key as keyof Score] as number;
-              const Icon = dim.icon;
-              return (
-                <div key={dim.key}>
-                  <div className="flex items-start gap-4 p-4 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors">
-                    <div className={`p-2 rounded-lg shrink-0 ${getScoreBgColor(dimScore)}`}>
-                      <Icon className={`w-5 h-5 ${getScoreColor(dimScore)}`} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-semibold">{dim.label}</h4>
-                        <Badge variant="outline" className={getScoreColor(dimScore)}>
-                          {dimScore.toFixed(1)}/4.0
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {score.feedback[dim.key as keyof typeof score.feedback]}
-                      </p>
-                    </div>
-                  </div>
-                  {index < dimensions.length - 1 && <Separator className="my-4" />}
-                </div>
-              );
-            })}
-          </div>
         </CardContent>
       </Card>
     </div>
