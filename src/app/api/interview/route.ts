@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { openai } from "@/lib/openai";
+import { ollamaChat } from "@/lib/ollama";
 import { getInterviewPrompt } from "@/lib/prompts/interviewer";
 
 export async function POST(request: NextRequest) {
@@ -33,19 +33,19 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Get initial interviewer message
+    // Get initial interviewer message using Ollama
     const systemPrompt = getInterviewPrompt(topic, difficulty);
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+    const completion = await ollamaChat({
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: "Start the interview." },
       ],
+      temperature: 0.7,
       max_tokens: 500,
     });
 
-    const initialMessage = completion.choices[0]?.message?.content;
+    const initialMessage = completion.message?.content;
 
     if (!initialMessage) {
       throw new Error("Failed to generate initial message");

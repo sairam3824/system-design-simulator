@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
   DialogContent,
@@ -272,12 +271,27 @@ export function InterviewChat({
     return () => clearInterval(interval);
   }, [isCompleted, currentPhaseIndex]);
 
-  // Auto-scroll
-  useEffect(() => {
+  // Scroll to bottom function - directly target the scroll container
+  const scrollToBottom = useCallback(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, []);
+
+  // Auto-scroll when messages change
+  useEffect(() => {
+    // Small delay to ensure DOM has updated
+    const timeoutId = setTimeout(scrollToBottom, 50);
+    return () => clearTimeout(timeoutId);
+  }, [messages, scrollToBottom]);
+
+  // Also scroll during streaming (when isLoading changes)
+  useEffect(() => {
+    if (isLoading) {
+      const scrollInterval = setInterval(scrollToBottom, 100);
+      return () => clearInterval(scrollInterval);
+    }
+  }, [isLoading, scrollToBottom]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -558,13 +572,12 @@ export function InterviewChat({
             {INTERVIEW_PHASES.map((phase, index) => (
               <div
                 key={phase.id}
-                className={`flex-1 relative overflow-hidden rounded-lg transition-all duration-300 ${
-                  index === currentPhaseIndex
+                className={`flex-1 relative overflow-hidden rounded-lg transition-all duration-300 ${index === currentPhaseIndex
                     ? `bg-gradient-to-r ${phase.color} shadow-lg shadow-primary/20`
                     : index < currentPhaseIndex
-                    ? "bg-muted/50"
-                    : "bg-muted/20"
-                }`}
+                      ? "bg-muted/50"
+                      : "bg-muted/20"
+                  }`}
               >
                 <div className="flex items-center gap-2 px-3 py-2">
                   <svg
@@ -575,9 +588,8 @@ export function InterviewChat({
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={phase.icon} />
                   </svg>
-                  <span className={`text-xs font-medium truncate ${
-                    index === currentPhaseIndex ? "text-white" : "text-muted-foreground"
-                  } ${index < currentPhaseIndex ? "line-through" : ""}`}>
+                  <span className={`text-xs font-medium truncate ${index === currentPhaseIndex ? "text-white" : "text-muted-foreground"
+                    } ${index < currentPhaseIndex ? "line-through" : ""}`}>
                     {phase.name}
                   </span>
                   {index < currentPhaseIndex && (
@@ -616,7 +628,7 @@ export function InterviewChat({
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Chat/Transcript Area */}
-        <div className={`flex flex-col ${isCompleted && score ? 'w-2/5 border-r border-border/50' : 'flex-1'}`}>
+        <div className={`flex flex-col min-h-0 ${isCompleted && score ? 'w-2/5 border-r border-border/50' : 'flex-1'}`}>
           {/* Transcript Header for completed interviews */}
           {isCompleted && score && (
             <div className="px-6 py-3 border-b border-border/50 bg-muted/30">
@@ -628,40 +640,43 @@ export function InterviewChat({
               </h2>
             </div>
           )}
-          <ScrollArea className="flex-1 p-6" ref={scrollRef}>
+          <div
+            ref={scrollRef}
+            className="flex-1 min-h-0 overflow-y-auto p-6"
+          >
             <div className={`space-y-4 ${isCompleted && score ? 'max-w-none' : 'max-w-3xl mx-auto'}`}>
               {messages.map((message, index) => (
                 <div
                   key={message.id}
-                  className={`flex gap-3 animate-in fade-in-0 slide-in-from-bottom-2 ${
-                    message.role === "user" ? "flex-row-reverse" : ""
-                  }`}
+                  className={`flex gap-3 animate-in fade-in-0 slide-in-from-bottom-2 ${message.role === "user" ? "flex-row-reverse" : ""
+                    }`}
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
-                  {/* Avatar */}
-                  <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
-                    message.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-gradient-to-br from-violet-500 to-purple-600 text-white"
-                  }`}>
-                    {message.role === "user" ? (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                    ) : (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
-                    )}
+                  {/* Avatar with name */}
+                  <div className="flex flex-col items-center gap-1">
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${message.role === "user"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-gradient-to-br from-violet-500 to-purple-600 text-white"
+                      }`}>
+                      {message.role === "user" ? (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      ) : (
+                        <span className="text-sm font-bold">B</span>
+                      )}
+                    </div>
+                    <span className={`text-xs font-medium ${message.role === "user" ? "text-muted-foreground" : "text-violet-400"}`}>
+                      {message.role === "user" ? "You" : "Bobby"}
+                    </span>
                   </div>
 
                   {/* Message Bubble */}
                   <div className={`flex-1 max-w-[80%] ${message.role === "user" ? "flex flex-col items-end" : ""}`}>
-                    <div className={`rounded-2xl px-4 py-3 ${
-                      message.role === "user"
+                    <div className={`rounded-2xl px-4 py-3 ${message.role === "user"
                         ? "bg-primary text-primary-foreground rounded-tr-sm"
                         : "bg-card border border-border rounded-tl-sm"
-                    }`}>
+                      }`}>
                       <div className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</div>
                     </div>
                     <span className="text-xs text-muted-foreground mt-1 px-2" suppressHydrationWarning>
@@ -674,22 +689,29 @@ export function InterviewChat({
               {/* Typing Indicator */}
               {isLoading && (
                 <div className="flex gap-3 animate-in fade-in-0">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+                      <span className="text-sm font-bold text-white">B</span>
+                    </div>
+                    <span className="text-xs font-medium text-violet-400">Bobby</span>
                   </div>
                   <div className="bg-card border border-border rounded-2xl rounded-tl-sm px-4 py-3">
-                    <div className="flex gap-1.5">
-                      <span className="w-2 h-2 bg-primary rounded-full animate-bounce" />
-                      <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "0.1s" }} />
-                      <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
+                    <div className="flex items-center gap-2">
+                      <div className="flex gap-1.5">
+                        <span className="w-2 h-2 bg-primary rounded-full animate-bounce" />
+                        <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "0.1s" }} />
+                        <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
+                      </div>
+                      <span className="text-xs text-muted-foreground">Bobby is typing...</span>
                     </div>
                   </div>
                 </div>
               )}
+
+              {/* Bottom padding to ensure last messages aren't cut off */}
+              <div className="h-4" />
             </div>
-          </ScrollArea>
+          </div>
 
           {/* Input Area */}
           {!isCompleted && (
@@ -727,11 +749,10 @@ export function InterviewChat({
                             setInputMode("voice");
                             if (!isListening) toggleListening();
                           }}
-                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                            inputMode === "voice"
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${inputMode === "voice"
                               ? "bg-primary text-primary-foreground shadow-sm"
                               : "text-muted-foreground hover:text-foreground"
-                          }`}
+                            }`}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
@@ -746,11 +767,10 @@ export function InterviewChat({
                               setIsListening(false);
                             }
                           }}
-                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                            inputMode === "keyboard"
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${inputMode === "keyboard"
                               ? "bg-primary text-primary-foreground shadow-sm"
                               : "text-muted-foreground hover:text-foreground"
-                          }`}
+                            }`}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -799,11 +819,10 @@ export function InterviewChat({
                         type="button"
                         onClick={toggleListening}
                         disabled={isLoading}
-                        className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-lg ${
-                          isListening
+                        className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-lg ${isListening
                             ? "bg-red-500 hover:bg-red-600 text-white scale-110"
                             : "bg-primary hover:bg-primary/90 text-primary-foreground"
-                        } disabled:opacity-50 disabled:scale-100`}
+                          } disabled:opacity-50 disabled:scale-100`}
                       >
                         {isListening ? (
                           <div className="relative">
@@ -868,17 +887,16 @@ export function InterviewChat({
                 Live Scores
               </h3>
               <div className="space-y-3">
-                {phaseAnalyses.map((analysis) => (
-                  <div key={analysis.phase} className="p-3 bg-card rounded-xl border border-border/50">
+                {phaseAnalyses.map((analysis, index) => (
+                  <div key={`${analysis.phase}-${index}`} className="p-3 bg-card rounded-xl border border-border/50">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium capitalize">
                         {analysis.phase.replace("-", " ")}
                       </span>
-                      <div className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                        analysis.score >= 3 ? "bg-green-500/20 text-green-400" :
-                        analysis.score >= 2 ? "bg-yellow-500/20 text-yellow-400" :
-                        "bg-red-500/20 text-red-400"
-                      }`}>
+                      <div className={`px-2 py-0.5 rounded-full text-xs font-bold ${analysis.score >= 3 ? "bg-green-500/20 text-green-400" :
+                          analysis.score >= 2 ? "bg-yellow-500/20 text-yellow-400" :
+                            "bg-red-500/20 text-red-400"
+                        }`}>
                         {analysis.score}/4
                       </div>
                     </div>

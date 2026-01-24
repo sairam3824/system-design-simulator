@@ -206,11 +206,10 @@ export default function InterviewsPage() {
         {interviewTopics.map((topic) => (
           <Card
             key={topic.name}
-            className={`cursor-pointer transition-all ${
-              selectedTopic === topic.name
+            className={`cursor-pointer transition-all ${selectedTopic === topic.name
                 ? "border-primary ring-2 ring-primary"
                 : "hover:border-primary/50"
-            }`}
+              }`}
             onClick={() => setSelectedTopic(topic.name)}
           >
             <CardHeader className="pb-2">
@@ -225,8 +224,8 @@ export default function InterviewsPage() {
                       topic.difficulty === "hard"
                         ? "destructive"
                         : topic.difficulty === "medium"
-                        ? "secondary"
-                        : "default"
+                          ? "secondary"
+                          : "default"
                     }
                   >
                     {topic.difficulty}
@@ -331,7 +330,7 @@ export default function InterviewsPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                     </svg>
-                    Preparing Your Interview...
+                    Preparing Your Interview...(It may take 2 - 3 minutes)
                   </span>
                 ) : (
                   "Start Interview"
@@ -470,8 +469,8 @@ export default function InterviewsPage() {
                           {!difficultyPreview.profileSummary.hasProfile && !difficultyPreview.profileSummary.hasResume
                             ? "Add your profile and resume for better personalization"
                             : !difficultyPreview.profileSummary.hasProfile
-                            ? "Complete your profile for better results"
-                            : "Upload a resume for more accurate analysis"}
+                              ? "Complete your profile for better results"
+                              : "Upload a resume for more accurate analysis"}
                         </p>
                       </div>
                     )}

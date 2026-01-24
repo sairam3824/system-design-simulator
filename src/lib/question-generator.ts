@@ -1,11 +1,11 @@
 /**
  * Personalized Question Generator
  *
- * Uses OpenAI to generate interview questions tailored to user's profile,
+ * Uses Ollama (local LLM) to generate interview questions tailored to user's profile,
  * skills, experience, and target companies.
  */
 
-import { openai } from "./openai";
+import { ollamaChat } from "./ollama";
 import {
   DifficultyLevel,
   UserProfileData,
@@ -200,7 +200,7 @@ function parseQuestionResponse(response: string): Partial<PersonalizedQuestionSe
 }
 
 /**
- * Generate personalized questions using OpenAI
+ * Generate personalized questions using Ollama (local LLM)
  */
 export async function generatePersonalizedQuestions(
   input: QuestionGeneratorInput
@@ -208,12 +208,11 @@ export async function generatePersonalizedQuestions(
   const prompt = buildQuestionPrompt(input);
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+    const completion = await ollamaChat({
       messages: [
         {
           role: "system",
-          content: "You are an expert system design interview question generator. Always respond with valid JSON.",
+          content: "You are an expert system design interview question generator. Always respond with valid JSON only, no additional text.",
         },
         {
           role: "user",
@@ -222,10 +221,9 @@ export async function generatePersonalizedQuestions(
       ],
       temperature: 0.7,
       max_tokens: 2500,
-      response_format: { type: "json_object" },
     });
 
-    const responseText = completion.choices[0]?.message?.content || "";
+    const responseText = completion.message?.content || "";
     const parsed = parseQuestionResponse(responseText);
 
     return {
@@ -238,7 +236,7 @@ export async function generatePersonalizedQuestions(
       interviewerContext: parsed.interviewerContext || "",
     };
   } catch (error) {
-    console.error("OpenAI question generation error:", error);
+    console.error("Ollama question generation error:", error);
 
     // Return fallback questions
     return generateFallbackQuestions(input);
@@ -246,7 +244,7 @@ export async function generatePersonalizedQuestions(
 }
 
 /**
- * Generate fallback questions if OpenAI fails
+ * Generate fallback questions if Ollama fails
  */
 function generateFallbackQuestions(input: QuestionGeneratorInput): PersonalizedQuestionSet {
   const { topic, difficulty } = input;
@@ -349,7 +347,7 @@ export function buildPersonalizedInterviewerPrompt(
     ? `They are targeting companies like: ${profile.targetCompanies.join(", ")}.`
     : "";
 
-  return `You are a senior software engineer conducting a 45-minute system design interview at a top tech company.
+  return `You are Bobby, a friendly and experienced senior software engineer conducting a 45-minute system design interview at a top tech company. You have 10+ years of experience building large-scale distributed systems.
 
 ## Interview Topic: ${topic}
 ## Difficulty: ${difficulty.toUpperCase()}
@@ -368,27 +366,32 @@ ${focusAreas.map(area => `- ${area}`).join("\n")}
 
 ## Interview Guidelines
 
-1. **Adapt to the Candidate**: Use their background to ask relevant follow-up questions.
+1. **Your Personality as Bobby**:
+   - Be warm, encouraging, and professional
+   - Use a conversational tone while maintaining technical rigor
+   - Occasionally use phrases like "Great point!", "That's interesting...", "I like that approach"
+
+2. **Adapt to the Candidate**: Use their background to ask relevant follow-up questions.
    - If they mention technologies they know, probe deeper on those.
    - If they're junior, provide more guidance; if senior, expect more depth.
 
-2. **Difficulty Calibration**:
+3. **Difficulty Calibration**:
    ${difficulty === "easy" ? "- Be supportive and provide hints when the candidate is stuck" : ""}
    ${difficulty === "medium" ? "- Balance guidance with challenge, probe on trade-offs" : ""}
    ${difficulty === "hard" ? "- Be rigorous, expect precise answers, challenge all decisions" : ""}
 
-3. **Phase Management**: Guide through all phases:
+4. **Phase Management**: Guide through all phases:
    - Requirements (8 min) → High-Level Design (12 min) → Deep Dive (12 min) → Scalability (10 min) → Wrap-up (3 min)
 
-4. **Question Style**:
+5. **Question Style**:
    - Keep responses concise (2-4 sentences)
    - Ask one question at a time
    - Acknowledge good points before probing deeper
    - Use "[PHASE_TRANSITION: phase-id]" to signal phase changes
 
-5. **Personalized Probing**:
+6. **Personalized Probing**:
    - If candidate mentions their known technologies, ask how they'd apply them
    - For target company alignment, use similar question patterns those companies use
 
-Start by introducing yourself briefly and asking the first clarifying question about requirements.`;
+Start by introducing yourself as Bobby, mention you're excited to discuss ${topic} with them, and ask the first clarifying question about requirements.`;
 }

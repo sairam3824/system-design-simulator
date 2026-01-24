@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { openai } from "@/lib/openai";
+import { ollamaChatStream, OllamaMessage } from "@/lib/ollama";
 
 export async function POST(
   request: NextRequest,
@@ -52,8 +52,8 @@ export async function POST(
       },
     });
 
-    // Build conversation history for OpenAI
-    const messages = interview.messages.map((m) => ({
+    // Build conversation history for Ollama
+    const messages: OllamaMessage[] = interview.messages.map((m) => ({
       role: m.role as "system" | "user" | "assistant",
       content: m.content,
     }));
@@ -61,40 +61,80 @@ export async function POST(
     // Add the new user message
     messages.push({ role: "user", content: message });
 
-    // Create streaming response
-    const stream = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+    // Create streaming response using Ollama
+    const ollamaStream = await ollamaChatStream({
       messages,
+      temperature: 0.7,
       max_tokens: 800,
-      stream: true,
     });
 
     // Create a ReadableStream for the response
     const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
     let fullResponse = "";
+    let buffer = "";
 
     const readable = new ReadableStream({
       async start(controller) {
+        const reader = ollamaStream.getReader();
+
         try {
-          for await (const chunk of stream) {
-            const content = chunk.choices[0]?.delta?.content || "";
-            fullResponse += content;
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
+          while (true) {
+            const { done, value } = await reader.read();
+
+            if (done) {
+              // Save the complete assistant message
+              if (fullResponse.trim()) {
+                await prisma.message.create({
+                  data: {
+                    interviewId: id,
+                    role: "assistant",
+                    content: fullResponse,
+                  },
+                });
+              }
+
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`));
+              controller.close();
+              break;
+            }
+
+            // Decode the chunk and add to buffer
+            buffer += decoder.decode(value, { stream: true });
+
+            // Process complete JSON lines from Ollama
+            const lines = buffer.split("\n");
+            buffer = lines.pop() || "";
+
+            for (const line of lines) {
+              if (line.trim()) {
+                try {
+                  const json = JSON.parse(line);
+                  if (json.message?.content) {
+                    const content = json.message.content;
+                    fullResponse += content;
+                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
+                  }
+                } catch {
+                  // Skip invalid JSON lines
+                }
+              }
+            }
           }
-
-          // Save the complete assistant message
-          await prisma.message.create({
-            data: {
-              interviewId: id,
-              role: "assistant",
-              content: fullResponse,
-            },
-          });
-
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`));
-          controller.close();
         } catch (error) {
           console.error("Stream error:", error);
+
+          // Save partial response if any
+          if (fullResponse.trim()) {
+            await prisma.message.create({
+              data: {
+                interviewId: id,
+                role: "assistant",
+                content: fullResponse,
+              },
+            });
+          }
+
           controller.error(error);
         }
       },

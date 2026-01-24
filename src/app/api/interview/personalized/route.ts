@@ -11,7 +11,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { openai } from "@/lib/openai";
+import { ollamaChat } from "@/lib/ollama";
 import {
   calculateSmartDifficulty,
   DifficultyLevel,
@@ -127,9 +127,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // 11. Generate initial interviewer message
-    const initialCompletion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+    // 11. Generate initial interviewer message using Ollama
+    const initialCompletion = await ollamaChat({
       messages: [
         { role: "system", content: interviewerPrompt },
         { role: "user", content: "Start the interview." },
@@ -139,8 +138,8 @@ export async function POST(request: NextRequest) {
     });
 
     const initialMessage =
-      initialCompletion.choices[0]?.message?.content ||
-      `Welcome! Today we'll be designing ${topic}. Let's start with some clarifying questions. What's the first thing you'd want to understand about the requirements?`;
+      initialCompletion.message?.content ||
+      `Hey there! I'm Bobby, and I'll be your interviewer today. I'm excited to discuss ${topic} with you! Let's start with some clarifying questions - what's the first thing you'd want to understand about the requirements?`;
 
     // 12. Save messages to database
     await prisma.message.createMany({
