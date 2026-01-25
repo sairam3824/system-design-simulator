@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { openai } from "@/lib/openai";
 import { SCORING_PROMPT } from "@/lib/prompts/interviewer";
+import { updateUserAnalyticsCache } from "@/lib/analytics/performance-analytics";
 
 export async function POST(
   request: NextRequest,
@@ -52,6 +53,41 @@ export async function POST(
       .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
       .join("\n\n");
 
+    // Determine which phases were actually completed
+    const completedPhases: string[] = [];
+    if (interview.phaseTransitions) {
+      const transitions: Array<{ phase: string; startedAt: string; endedAt?: string }> =
+        JSON.parse(interview.phaseTransitions);
+      completedPhases.push(...transitions.map(t => t.phase));
+    }
+
+    // Map phase names to dimension names
+    const phaseMapping: Record<string, string> = {
+      "Requirements Clarification": "requirementsClarification",
+      "High-Level Design": "highLevelDesign",
+      "Deep Dive": "detailedDesign",
+      "Scalability & Trade-offs": "scalability",
+      "Wrap-up": "communication"
+    };
+
+    // Build phase completion message for AI
+    const phaseCompletionInfo = `
+## Phases Actually Completed
+${completedPhases.length > 0 ? completedPhases.map(p => `- ${p}`).join('\n') : '- None (interview ended early)'}
+
+**CRITICAL SCORING RULE:** 
+- ONLY evaluate and score phases that were actually completed (listed above)
+- For phases NOT completed, you MUST assign a score of 1
+- For example, if only "Requirements Clarification" and "High-Level Design" were completed:
+  * Score requirementsClarification and highLevelDesign based on performance
+  * detailedDesign MUST be 1
+  * scalability MUST be 1
+  * tradeoffs MUST be 1 (unless discussed in completed phases)
+  * communication can be scored based on overall communication in completed phases
+
+Do NOT give credit for phases that were never reached.
+`;
+
     // Add metadata about message counts to help AI evaluate accurately
     const messageStats = `
 ## Interview Statistics
@@ -69,7 +105,7 @@ export async function POST(
         { role: "system", content: SCORING_PROMPT },
         {
           role: "user",
-          content: `Interview Topic: ${interview.topic}\n${messageStats}\n\nConversation:\n${conversationText}`,
+          content: `Interview Topic: ${interview.topic}\n${phaseCompletionInfo}\n${messageStats}\n\nConversation:\n${conversationText}`,
         },
       ],
       response_format: { type: "json_object" },
@@ -117,6 +153,21 @@ export async function POST(
       allDimensions.every((d: number) => d >= 2) &&
       scoreData.tradeoffs >= 3;
 
+    // Calculate phase durations from transitions
+    let phaseDurations: Record<string, number> = {};
+    if (interview.phaseTransitions) {
+      const transitions: Array<{ phase: string; startedAt: string; endedAt?: string }> =
+        JSON.parse(interview.phaseTransitions);
+
+      for (const transition of transitions) {
+        const endTime = transition.endedAt || new Date().toISOString();
+        const duration = Math.round(
+          (new Date(endTime).getTime() - new Date(transition.startedAt).getTime()) / 1000
+        );
+        phaseDurations[transition.phase] = duration;
+      }
+    }
+
     // Create score record
     const score = await prisma.score.create({
       data: {
@@ -133,14 +184,22 @@ export async function POST(
       },
     });
 
-    // Update interview status
+    // Update interview status with phase durations
     await prisma.interview.update({
       where: { id },
       data: {
         status: "completed",
         endedAt: new Date(),
+        phaseDurations: Object.keys(phaseDurations).length > 0
+          ? JSON.stringify(phaseDurations)
+          : null,
       },
     });
+
+    // Update user analytics cache (async, don't wait)
+    updateUserAnalyticsCache(session.user.id).catch((err) =>
+      console.error("Failed to update analytics cache:", err)
+    );
 
     return NextResponse.json({
       score: {

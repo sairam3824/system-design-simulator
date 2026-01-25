@@ -16,10 +16,10 @@ export async function POST(
 
     const { id } = await params;
     const body = await request.json();
-    const { message } = body;
+    const { message, phaseContext, currentPhase } = body;
 
-    if (!message) {
-      return new Response("Message is required", { status: 400 });
+    if (!message && !phaseContext) {
+      return new Response("Message or phaseContext is required", { status: 400 });
     }
 
     // Verify ownership and get interview with messages
@@ -43,14 +43,41 @@ export async function POST(
       return new Response("Interview is already completed", { status: 400 });
     }
 
-    // Save user message
-    await prisma.message.create({
-      data: {
-        interviewId: id,
-        role: "user",
-        content: message,
-      },
-    });
+    // Handle phase transition recording for time tracking
+    if (phaseContext) {
+      const currentTransitions: Array<{ phase: string; startedAt: string; endedAt?: string }> =
+        interview.phaseTransitions ? JSON.parse(interview.phaseTransitions) : [];
+
+      // Close previous phase if exists
+      if (currentTransitions.length > 0) {
+        const lastIndex = currentTransitions.length - 1;
+        if (!currentTransitions[lastIndex].endedAt) {
+          currentTransitions[lastIndex].endedAt = new Date().toISOString();
+        }
+      }
+
+      // Start new phase
+      currentTransitions.push({
+        phase: phaseContext,
+        startedAt: new Date().toISOString(),
+      });
+
+      await prisma.interview.update({
+        where: { id },
+        data: { phaseTransitions: JSON.stringify(currentTransitions) },
+      });
+    }
+
+    // Save user message only if provided
+    if (message) {
+      await prisma.message.create({
+        data: {
+          interviewId: id,
+          role: "user",
+          content: message,
+        },
+      });
+    }
 
     // Build conversation history for Ollama
     const messages: OllamaMessage[] = interview.messages.map((m) => ({
@@ -58,8 +85,34 @@ export async function POST(
       content: m.content,
     }));
 
-    // Add the new user message
-    messages.push({ role: "user", content: message });
+    // Phase boundary enforcement reminder
+    const phaseReminders: Record<string, string> = {
+      requirements: "You are currently in the REQUIREMENTS CLARIFICATION phase (45:00-37:00). ONLY ask about: scale (DAU, QPS, data size), functional requirements, non-functional requirements (latency, consistency), and priorities. DO NOT ask about architecture, components, databases, or implementation yet.",
+      "high-level": "You are currently in the HIGH-LEVEL DESIGN phase (37:00-25:00). ONLY ask about: overall architecture, main components, API design, data flow, and database choices at a high level. DO NOT dive into implementation details, algorithms, or schemas yet.",
+      "deep-dive": "You are currently in the DEEP DIVE phase (25:00-13:00). NOW you can ask about: data models, schemas, algorithms, protocols, implementation details, and failure scenarios. DO NOT ask about scalability strategies yet.",
+      scalability: "You are currently in the SCALABILITY phase (13:00-3:00). NOW you can ask about: scaling strategies (10x-100x), caching, sharding, load balancing, performance optimization, and trade-offs.",
+      wrapup: "You are currently in the WRAP-UP phase (3:00-0:00). Summarize the design, address remaining concerns, and answer candidate questions.",
+    };
+
+    // Add context or user message
+    if (phaseContext) {
+      messages.push({
+        role: "system",
+        content: `TRANSITION: The interview timer has advanced to the "${phaseContext}" phase. 
+        Please acknowledge this transition, briefly wrap up the previous topic if needed, and immediately start the ${phaseContext} phase by asking a relevant question. 
+        Do not wait for the user to respond to the previous topic. Focus on the new phase requirements.`,
+      });
+    } else if (currentPhase && phaseReminders[currentPhase]) {
+      // Add phase reminder for regular messages
+      messages.push({
+        role: "system",
+        content: phaseReminders[currentPhase],
+      });
+    }
+
+    if (message) {
+      messages.push({ role: "user", content: message });
+    }
 
     // Create streaming response using Ollama
     const ollamaStream = await ollamaChatStream({
@@ -83,8 +136,9 @@ export async function POST(
             const { done, value } = await reader.read();
 
             if (done) {
-              // Save the complete assistant message
-              if (fullResponse.trim()) {
+              // Save the complete assistant message only if it's NOT a phase transition
+              // Phase transitions are handled by frontend state and shouldn't be duplicated in DB
+              if (fullResponse.trim() && !phaseContext) {
                 await prisma.message.create({
                   data: {
                     interviewId: id,
@@ -124,8 +178,8 @@ export async function POST(
         } catch (error) {
           console.error("Stream error:", error);
 
-          // Save partial response if any
-          if (fullResponse.trim()) {
+          // Save partial response if any (but not for phase transitions)
+          if (fullResponse.trim() && !phaseContext) {
             await prisma.message.create({
               data: {
                 interviewId: id,

@@ -22,7 +22,7 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-6xl">
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Profile Settings</h1>
         <p className="text-muted-foreground mt-1">

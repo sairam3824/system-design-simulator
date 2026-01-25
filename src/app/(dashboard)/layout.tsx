@@ -19,11 +19,11 @@ export default async function DashboardLayout({
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Header */}
-        <header className="h-16 border-b border-border/50 bg-background/80 backdrop-blur-sm flex items-center justify-between px-6 flex-shrink-0">
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">Welcome back,</span>
-            <span className="text-sm font-semibold">{session.user.name || session.user.email}</span>
-          </div>
+        <header className="h-16 border-b border-border/50 bg-background/80 backdrop-blur-sm flex items-center justify-end px-6 flex-shrink-0 gap-4">
+          <span className="text-sm font-medium text-muted-foreground">
+            {session.user.name || session.user.email}
+          </span>
+          <div className="h-4 w-px bg-border/50" />
           <LogoutButton />
         </header>
         <main className="flex-1 overflow-auto">

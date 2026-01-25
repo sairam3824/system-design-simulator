@@ -43,6 +43,18 @@ export default async function InterviewPage({
       timestamp: m.timestamp.toISOString(),
     }));
 
+  // Extract completed phases
+  let completedPhases: string[] = [];
+  if (interview.phaseTransitions) {
+    try {
+      const transitions: Array<{ phase: string; startedAt: string; endedAt?: string }> =
+        JSON.parse(interview.phaseTransitions);
+      completedPhases = transitions.map(t => t.phase);
+    } catch (error) {
+      console.error("Failed to parse phase transitions:", error);
+    }
+  }
+
   return (
     <InterviewChat
       interview={{
@@ -53,12 +65,13 @@ export default async function InterviewPage({
         startedAt: interview.startedAt?.toISOString() || null,
       }}
       initialMessages={displayMessages}
+      completedPhases={completedPhases}
       score={
         interview.score
           ? {
-              ...interview.score,
-              feedback: JSON.parse(interview.score.feedback),
-            }
+            ...interview.score,
+            feedback: JSON.parse(interview.score.feedback),
+          }
           : null
       }
     />

@@ -65,6 +65,69 @@ const interviewTopics = [
     icon: "Y",
     concepts: ["Video processing", "Live streaming", "Recommendations", "Comments"],
   },
+  {
+    name: "Design Amazon",
+    description: "E-commerce platform, shopping cart, order processing",
+    difficulty: "hard",
+    icon: "A",
+    concepts: ["Consistency", "Transactions", "Search index", "Inventory management"],
+  },
+  {
+    name: "Design Google Search",
+    description: "Web crawler, indexer, search ranking",
+    difficulty: "hard",
+    icon: "G",
+    concepts: ["Crawling", "Inverted index", "PageRank", "Distributed storage"],
+  },
+  {
+    name: "Design Facebook",
+    description: "Social graph, news feed, privacy controls",
+    difficulty: "medium",
+    icon: "F",
+    concepts: ["Graph API", "Feed generation", "Caching strategy", "Privacy"],
+  },
+  {
+    name: "Design Dropbox",
+    description: "File synchronization, block storage, versioning",
+    difficulty: "medium",
+    icon: "D",
+    concepts: ["Block storage", "Synchronization", "Data deduplication", "Versioning"],
+  },
+  {
+    name: "Design Swiggy",
+    description: "Food delivery ecosystem, real-time order tracking",
+    difficulty: "medium",
+    icon: "S",
+    concepts: ["Geo-spatial index", "Order dispatching", "Real-time updates", "Logistics"],
+  },
+  {
+    name: "Design Ola",
+    description: "Ride-hailing service, driver matching, routing",
+    difficulty: "hard",
+    icon: "O",
+    concepts: ["Geo-hashing", "Matching algorithms", "Payment consistency", "Driver state"],
+  },
+  {
+    name: "Design BookMyShow",
+    description: "Ticket booking platform, seat selection, concurrency",
+    difficulty: "medium",
+    icon: "B",
+    concepts: ["ACID transactions", "Concurrency control", "Seat locking", "Caching"],
+  },
+  {
+    name: "Design TinyURL",
+    description: "URL shortening service, redirection, analytics",
+    difficulty: "easy",
+    icon: "T",
+    concepts: ["Hashing strategies", "Key generation", "Database choices", "Redirection"],
+  },
+  {
+    name: "Design Zoom",
+    description: "Video conferencing, screen sharing, recording",
+    difficulty: "hard",
+    icon: "Z",
+    concepts: ["WebRTC", "Signaling server", "UDP vs TCP", "Media processing"],
+  },
 ];
 
 interface DifficultyPreview {
@@ -207,8 +270,8 @@ export default function InterviewsPage() {
           <Card
             key={topic.name}
             className={`cursor-pointer transition-all ${selectedTopic === topic.name
-                ? "border-primary ring-2 ring-primary"
-                : "hover:border-primary/50"
+              ? "border-primary ring-2 ring-primary"
+              : "hover:border-primary/50"
               }`}
             onClick={() => setSelectedTopic(topic.name)}
           >
