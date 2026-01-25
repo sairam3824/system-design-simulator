@@ -20,6 +20,9 @@ model User {
   profile       Profile?
   resumes       Resume[]
   interviews    Interview[]
+  analytics     UserAnalytics?
+  codingChallenges CodingChallenge[]
+  codingTests     CodingTest[]
 }
 
 model Profile {
@@ -73,8 +76,14 @@ model Interview {
   endedAt     DateTime?
   createdAt   DateTime  @default(now())
 
+  // Time tracking for phases
+  phaseDurations   String?  // JSON: { requirements: 480, highLevel: 720 } in seconds
+  phaseTransitions String?  // JSON: [{ phase: "requirements", startedAt: ISO, endedAt: ISO }]
+
   messages    Message[]
   score       Score?
+
+  @@index([userId, status, endedAt])
 }
 
 model Message {
@@ -111,3 +120,133 @@ model Score {
   createdAt                 DateTime @default(now())
   updatedAt                 DateTime @updatedAt
 }
+
+// Cached analytics for user performance tracking
+model UserAnalytics {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Cached aggregates (updated after each interview)
+  totalInterviews     Int      @default(0)
+  completedInterviews Int      @default(0)
+  avgOverallScore     Float?
+  passRate            Float?
+
+  // Weak/strong areas tracking
+  weakDimensions      String   @default("[]")  // JSON array: ["scalability", "tradeoffs"]
+  strongDimensions    String   @default("[]")  // JSON array: ["communication", "requirements"]
+
+  // Topic performance
+  topicStats          String   @default("{}")  // JSON: { "Design Twitter": { count: 5, avgScore: 2.8 } }
+
+  // Trend data
+  scoreTrend          String   @default("stable") // "improving" | "stable" | "declining"
+  lastCalculatedAt    DateTime @default(now())
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+// ==================== CODING CHALLENGE MODELS ====================
+
+// Predefined problem bank
+model CodingProblem {
+  id              String   @id @default(cuid())
+  title           String
+  description     String
+  difficulty      String   // easy, medium, hard
+  category        String   // arrays, strings, dp, graphs, trees, etc.
+  companies       String   @default("[]")  // JSON array of company names
+  constraints     String   @default("[]")  // JSON array
+  examples        String   @default("[]")  // JSON [{input, output, explanation}]
+  testCases       String   @default("[]")  // JSON [{input, expectedOutput, isHidden}]
+  solutionApproaches String @default("[]") // JSON array
+  starterCode     String   @default("{}")  // JSON {python: "...", java: "..."}
+  timeLimit       Int      @default(45)    // minutes
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  challenges      CodingChallenge[]
+
+  @@index([difficulty, category])
+}
+
+// User's coding challenge instance
+model CodingChallenge {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problemId       String?
+  problem         CodingProblem? @relation(fields: [problemId], references: [id])
+  testId          String?
+  test            CodingTest?    @relation(fields: [testId], references: [id], onDelete: Cascade)
+  title           String
+  description     String
+  difficulty      String
+  category        String
+  company         String?
+  language        String   // python, java, javascript, cpp, c, csharp, go
+  visibleTests    String   @default("[]")
+  hiddenTests     String   @default("[]")
+  timeLimit       Int      @default(45)
+  status          String   @default("pending") // pending, in_progress, completed
+  startedAt       DateTime?
+  endedAt         DateTime?
+  starterCode     String?
+  finalCode       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  submissions     ChallengeSubmission[]
+  score           ChallengeScore?
+
+  @@index([userId, status])
+}
+
+// Code submission for evaluation
+model ChallengeSubmission {
+  id              String   @id @default(cuid())
+  challengeId     String
+  challenge       CodingChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  code            String
+  language        String
+  submittedAt     DateTime @default(now())
+  evaluation      String?
+  testResults     String?
+  isValid         Boolean  @default(false)
+  errorMessage    String?
+
+  @@index([challengeId])
+}
+
+// Final score for coding challenge
+model ChallengeScore {
+  id              String   @id @default(cuid())
+  challengeId     String   @unique
+  challenge       CodingChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  correctness     Float
+  efficiency      Float
+  codeQuality     Float
+  edgeCases       Float
+  overallScore    Float
+  passStatus      Boolean
+  feedback        String
+  suggestedApproach String?
+  complexityAnalysis String?
+  createdAt       DateTime @default(now())
+}
+
+// ==================== CODING TEST MODELS ====================
+
+model CodingTest {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenges  CodingChallenge[]
+  status      String    @default("pending") // pending, in_progress, completed
+  startedAt   DateTime?
+  endedAt     DateTime?
+  timeLimit   Int       // Total minutes for all questions
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
