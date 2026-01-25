@@ -48,15 +48,16 @@ interface Score {
 
 interface ScoreCardProps {
   score: Score;
+  completedPhases?: string[]; // List of phase names that were actually completed
 }
 
 const dimensions = [
-  { key: "requirementsClarification", label: "Requirements Clarification", weight: "10%", icon: MessageSquare },
-  { key: "highLevelDesign", label: "High-Level Design", weight: "20%", icon: Layers },
-  { key: "detailedDesign", label: "Detailed Design", weight: "15%", icon: Target },
-  { key: "scalability", label: "Scalability", weight: "20%", icon: TrendingUp },
-  { key: "tradeoffs", label: "Tradeoffs Analysis", weight: "25%", icon: Scale },
-  { key: "communication", label: "Communication", weight: "10%", icon: Lightbulb },
+  { key: "requirementsClarification", label: "Requirements Clarification", weight: "10%", icon: MessageSquare, phase: "Requirements Clarification" },
+  { key: "highLevelDesign", label: "High-Level Design", weight: "20%", icon: Layers, phase: "High-Level Design" },
+  { key: "detailedDesign", label: "Detailed Design", weight: "15%", icon: Target, phase: "Deep Dive" },
+  { key: "scalability", label: "Scalability", weight: "20%", icon: TrendingUp, phase: "Scalability & Trade-offs" },
+  { key: "tradeoffs", label: "Tradeoffs Analysis", weight: "25%", icon: Scale, phase: "Scalability & Trade-offs" },
+  { key: "communication", label: "Communication", weight: "10%", icon: Lightbulb, phase: "all" }, // Communication is evaluated across all phases
 ];
 
 const getScoreColor = (score: number) => {
@@ -147,7 +148,13 @@ function CircularProgress({ value, max = 4 }: { value: number; max?: number }) {
   );
 }
 
-export function ScoreCard({ score }: ScoreCardProps) {
+export function ScoreCard({ score, completedPhases = [] }: ScoreCardProps) {
+  // Helper function to check if a phase was completed
+  const wasPhaseCompleted = (phaseName: string) => {
+    if (phaseName === "all") return true; // Communication is always evaluated
+    return completedPhases.includes(phaseName);
+  };
+
   return (
     <div className="space-y-6">
       {/* Hero Section - Compact Overall Score */}
@@ -161,11 +168,10 @@ export function ScoreCard({ score }: ScoreCardProps) {
                 <div className="space-y-2">
                   <Badge
                     variant={score.passStatus ? "default" : "destructive"}
-                    className={`px-4 py-1.5 text-sm font-semibold ${
-                      score.passStatus
+                    className={`px-4 py-1.5 text-sm font-semibold ${score.passStatus
                         ? "bg-emerald-500/90 hover:bg-emerald-500"
                         : "bg-red-500/90 hover:bg-red-500"
-                    }`}
+                      }`}
                   >
                     {score.passStatus ? (
                       <CheckCircle2 className="w-4 h-4 mr-1.5" />
@@ -205,17 +211,29 @@ export function ScoreCard({ score }: ScoreCardProps) {
             {dimensions.map((dim, index) => {
               const dimScore = score[dim.key as keyof Score] as number;
               const Icon = dim.icon;
+              const phaseCompleted = wasPhaseCompleted(dim.phase);
+
               return (
                 <div key={dim.key}>
-                  <div className="flex items-start gap-4 p-4 rounded-xl bg-background/80 border border-border/50 hover:border-primary/30 transition-colors">
+                  <div className={`flex items-start gap-4 p-4 rounded-xl border transition-colors ${phaseCompleted
+                      ? 'bg-background/80 border-border/50 hover:border-primary/30'
+                      : 'bg-muted/30 border-muted/50 opacity-60'
+                    }`}>
                     <div className={`p-2.5 rounded-lg shrink-0 ${getScoreBgColor(dimScore)} ring-1 ring-inset ${dimScore >= 2.5 ? 'ring-emerald-500/20' : 'ring-red-500/20'}`}>
                       <Icon className={`w-5 h-5 ${getScoreColor(dimScore)}`} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-2">
-                        <div>
-                          <h4 className="font-semibold">{dim.label}</h4>
-                          <span className="text-xs text-muted-foreground">Weight: {dim.weight}</span>
+                        <div className="flex items-center gap-2">
+                          <div>
+                            <h4 className="font-semibold">{dim.label}</h4>
+                            <span className="text-xs text-muted-foreground">Weight: {dim.weight}</span>
+                          </div>
+                          {!phaseCompleted && (
+                            <Badge variant="outline" className="text-xs bg-muted/50 text-muted-foreground border-muted-foreground/30">
+                              Not Reached
+                            </Badge>
+                          )}
                         </div>
                         <Badge variant="outline" className={`${getScoreColor(dimScore)} border-current`}>
                           {dimScore.toFixed(1)}/4.0

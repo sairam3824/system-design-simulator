@@ -124,12 +124,14 @@ interface InterviewChatProps {
     startedAt: string | null;
   };
   initialMessages: Message[];
+  completedPhases?: string[];
   score: Score | null;
 }
 
 export function InterviewChat({
   interview,
   initialMessages,
+  completedPhases = [],
   score: initialScore,
 }: InterviewChatProps) {
   const router = useRouter();
@@ -140,10 +142,39 @@ export function InterviewChat({
   const [showEndDialog, setShowEndDialog] = useState(false);
   const [score, setScore] = useState<Score | null>(initialScore);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<Message[]>(messages);
+
+  const isTransitioningRef = useRef(false);
+
+  // Keep messagesRef in sync
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   // Timer and phase states
-  const [remainingTime, setRemainingTime] = useState(TOTAL_INTERVIEW_TIME);
-  const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
+  const getInitialRemainingTime = () => {
+    if (interview.startedAt && interview.status !== "completed") {
+      const startTime = new Date(interview.startedAt).getTime();
+      const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+      const remaining = TOTAL_INTERVIEW_TIME - elapsedSeconds;
+      return remaining > 0 ? remaining : 0;
+    }
+    return TOTAL_INTERVIEW_TIME;
+  };
+
+  const initialTime = getInitialRemainingTime();
+
+  const [remainingTime, setRemainingTime] = useState(initialTime);
+
+  const getInitialPhaseIndex = () => {
+    const minutesLeft = Math.floor(initialTime / 60);
+    const index = INTERVIEW_PHASES.findIndex(
+      (phase) => minutesLeft < phase.startTime && minutesLeft >= phase.endTime
+    );
+    return index !== -1 ? index : 0;
+  };
+
+  const [currentPhaseIndex, setCurrentPhaseIndex] = useState(getInitialPhaseIndex);
   const [phaseAnalyses, setPhaseAnalyses] = useState<PhaseAnalysis[]>([]);
   const [isAnalyzingPhase, setIsAnalyzingPhase] = useState(false);
   const [phaseStartMessageIndex, setPhaseStartMessageIndex] = useState(0);
@@ -202,10 +233,20 @@ export function InterviewChat({
     };
 
     recognition.onerror = (event) => {
+      // Ignore routine errors
+      if (event.error === "no-speech" || event.error === "aborted") {
+        return;
+      }
+
       console.error("Speech recognition error:", event.error);
+
       if (event.error === "not-allowed") {
         toast.error("Microphone access denied. Please allow microphone access.");
         setInputMode("keyboard");
+      } else if (event.error === "network") {
+        toast.error("Voice recognition network error. Please check your internet connection.");
+      } else {
+        toast.error(`Voice error: ${event.error}`);
       }
       setIsListening(false);
     };
@@ -260,8 +301,11 @@ export function InterviewChat({
         const newPhaseIndex = INTERVIEW_PHASES.findIndex(
           (phase) => minutesLeft < phase.startTime && minutesLeft >= phase.endTime
         );
-        if (newPhaseIndex !== -1 && newPhaseIndex !== currentPhaseIndex) {
-          handlePhaseTransition(newPhaseIndex);
+        if (newPhaseIndex !== -1 && newPhaseIndex !== currentPhaseIndex && !isTransitioningRef.current) {
+          isTransitioningRef.current = true;
+          handlePhaseTransition(newPhaseIndex).finally(() => {
+            isTransitioningRef.current = false;
+          });
         }
 
         return newTime;
@@ -270,6 +314,14 @@ export function InterviewChat({
 
     return () => clearInterval(interval);
   }, [isCompleted, currentPhaseIndex]);
+
+  // Auto-end interview when time runs out
+  useEffect(() => {
+    if (remainingTime <= 0 && !isCompleted && !isEnding) {
+      toast.info("Time's up! Submitting interview...");
+      handleEndInterview();
+    }
+  }, [remainingTime, isCompleted, isEnding]);
 
   // Scroll to bottom function - directly target the scroll container
   const scrollToBottom = useCallback(() => {
@@ -314,9 +366,10 @@ export function InterviewChat({
   };
 
   const handlePhaseTransition = async (newPhaseIndex: number) => {
-    if (messages.length > phaseStartMessageIndex + 1) {
+    const currentMessages = messagesRef.current;
+    if (currentMessages.length > phaseStartMessageIndex + 1) {
       setIsAnalyzingPhase(true);
-      const phaseMessages = messages.slice(phaseStartMessageIndex);
+      const phaseMessages = currentMessages.slice(phaseStartMessageIndex);
 
       try {
         const response = await fetch(`/api/interview/${interview.id}/analyze-phase`, {
@@ -344,8 +397,68 @@ export function InterviewChat({
     }
 
     setCurrentPhaseIndex(newPhaseIndex);
-    setPhaseStartMessageIndex(messages.length);
+    setPhaseStartMessageIndex(currentMessages.length); // Use the ref length
     toast.info(`Moving to ${INTERVIEW_PHASES[newPhaseIndex].name} phase`);
+
+    // Trigger AI to introduce the new phase
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/interview/${interview.id}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phaseContext: INTERVIEW_PHASES[newPhaseIndex].name }),
+      });
+
+      if (!response.ok) throw new Error("Failed to get phase transition message");
+
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error("No reader available");
+
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "",
+        timestamp: new Date().toISOString(),
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+
+      const decoder = new TextDecoder();
+      let fullContent = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              if (data.content) {
+                fullContent += data.content;
+                setMessages((prev) => {
+                  const updated = [...prev];
+                  const lastMsg = updated[updated.length - 1];
+                  if (lastMsg.role === "assistant") {
+                    lastMsg.content = fullContent;
+                  }
+                  return updated;
+                });
+              }
+            } catch {
+              // Ignore
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Failed to generate phase transition:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const toggleListening = useCallback(() => {
@@ -368,7 +481,7 @@ export function InterviewChat({
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     const messageContent = input.trim();
-    if (!messageContent || isLoading || isCompleted) return;
+    if (!messageContent || isLoading || isCompleted || remainingTime <= 0) return;
 
     if (isListening && recognitionRef.current) {
       recognitionRef.current.stop();
@@ -391,7 +504,10 @@ export function InterviewChat({
       const response = await fetch(`/api/interview/${interview.id}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage.content }),
+        body: JSON.stringify({
+          message: userMessage.content,
+          currentPhase: currentPhase.id // Send current phase to enforce boundaries
+        }),
       });
 
       if (!response.ok) throw new Error("Failed to send message");
@@ -573,10 +689,10 @@ export function InterviewChat({
               <div
                 key={phase.id}
                 className={`flex-1 relative overflow-hidden rounded-lg transition-all duration-300 ${index === currentPhaseIndex
-                    ? `bg-gradient-to-r ${phase.color} shadow-lg shadow-primary/20`
-                    : index < currentPhaseIndex
-                      ? "bg-muted/50"
-                      : "bg-muted/20"
+                  ? `bg-gradient-to-r ${phase.color} shadow-lg shadow-primary/20`
+                  : index < currentPhaseIndex
+                    ? "bg-muted/50"
+                    : "bg-muted/20"
                   }`}
               >
                 <div className="flex items-center gap-2 px-3 py-2">
@@ -655,8 +771,8 @@ export function InterviewChat({
                   {/* Avatar with name */}
                   <div className="flex flex-col items-center gap-1">
                     <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${message.role === "user"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-gradient-to-br from-violet-500 to-purple-600 text-white"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-gradient-to-br from-violet-500 to-purple-600 text-white"
                       }`}>
                       {message.role === "user" ? (
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -674,8 +790,8 @@ export function InterviewChat({
                   {/* Message Bubble */}
                   <div className={`flex-1 max-w-[80%] ${message.role === "user" ? "flex flex-col items-end" : ""}`}>
                     <div className={`rounded-2xl px-4 py-3 ${message.role === "user"
-                        ? "bg-primary text-primary-foreground rounded-tr-sm"
-                        : "bg-card border border-border rounded-tl-sm"
+                      ? "bg-primary text-primary-foreground rounded-tr-sm"
+                      : "bg-card border border-border rounded-tl-sm"
                       }`}>
                       <div className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</div>
                     </div>
@@ -750,8 +866,8 @@ export function InterviewChat({
                             if (!isListening) toggleListening();
                           }}
                           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${inputMode === "voice"
-                              ? "bg-primary text-primary-foreground shadow-sm"
-                              : "text-muted-foreground hover:text-foreground"
+                            ? "bg-primary text-primary-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
                             }`}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -768,8 +884,8 @@ export function InterviewChat({
                             }
                           }}
                           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${inputMode === "keyboard"
-                              ? "bg-primary text-primary-foreground shadow-sm"
-                              : "text-muted-foreground hover:text-foreground"
+                            ? "bg-primary text-primary-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
                             }`}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -820,8 +936,8 @@ export function InterviewChat({
                         onClick={toggleListening}
                         disabled={isLoading}
                         className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-lg ${isListening
-                            ? "bg-red-500 hover:bg-red-600 text-white scale-110"
-                            : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                          ? "bg-red-500 hover:bg-red-600 text-white scale-110"
+                          : "bg-primary hover:bg-primary/90 text-primary-foreground"
                           } disabled:opacity-50 disabled:scale-100`}
                       >
                         {isListening ? (
@@ -894,8 +1010,8 @@ export function InterviewChat({
                         {analysis.phase.replace("-", " ")}
                       </span>
                       <div className={`px-2 py-0.5 rounded-full text-xs font-bold ${analysis.score >= 3 ? "bg-green-500/20 text-green-400" :
-                          analysis.score >= 2 ? "bg-yellow-500/20 text-yellow-400" :
-                            "bg-red-500/20 text-red-400"
+                        analysis.score >= 2 ? "bg-yellow-500/20 text-yellow-400" :
+                          "bg-red-500/20 text-red-400"
                         }`}>
                         {analysis.score}/4
                       </div>
@@ -927,7 +1043,7 @@ export function InterviewChat({
             </div>
             {/* Analysis Content - Scrollable */}
             <div className="flex-1 min-h-0 overflow-y-auto p-6">
-              <ScoreCard score={score} />
+              <ScoreCard score={score} completedPhases={completedPhases} />
             </div>
           </div>
         )}
