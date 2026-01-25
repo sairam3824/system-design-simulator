@@ -12,12 +12,15 @@ import {
   ResumeData,
   getDifficultyDescription,
 } from "./difficulty-calculator";
+import { FollowUpContext } from "./followup-engine";
 
 export interface QuestionGeneratorInput {
   topic: string;
   difficulty: DifficultyLevel;
   profile: UserProfileData | null;
   resume: ResumeData | null;
+  followUpContext?: FollowUpContext;
+  userId?: string;
 }
 
 export interface GeneratedQuestion {
@@ -107,14 +110,60 @@ function buildResumeContext(resume: ResumeData | null): string {
 }
 
 /**
+ * Build weak areas context for follow-up questioning
+ */
+function buildWeakAreasContext(followUpContext?: FollowUpContext): string {
+  if (!followUpContext || !followUpContext.hasHistory || followUpContext.weakPoints.length === 0) {
+    return "";
+  }
+
+  let context = `
+## Candidate's Past Performance (Focus Areas)
+
+This candidate has completed ${followUpContext.totalPastInterviews} previous interview${followUpContext.totalPastInterviews === 1 ? "" : "s"}.
+
+**Weak Areas to Target:**
+`;
+
+  for (const wp of followUpContext.weakPoints.slice(0, 3)) {
+    context += `- **${wp.dimension}**: scored ${wp.lastScore}/4, trend: ${wp.trend}
+  - Probe deeper on: ${wp.concept}
+`;
+  }
+
+  if (followUpContext.conceptsToProbe.length > 0) {
+    context += `
+**Specific Concepts to Include:**
+${followUpContext.conceptsToProbe.map(c => `- ${c}`).join("\n")}
+`;
+  }
+
+  if (followUpContext.topicsToReinforce.length > 0) {
+    context += `
+**Related Topics With Low Performance:**
+${followUpContext.topicsToReinforce.join(", ")}
+`;
+  }
+
+  context += `
+**Difficulty Adaptation:** ${followUpContext.adaptedDifficulty}
+${followUpContext.adaptedDifficulty === "easier" ? "- Generate more foundational questions with clear guidance" : ""}
+${followUpContext.adaptedDifficulty === "harder" ? "- Generate challenging edge cases and advanced scenarios" : ""}
+`;
+
+  return context;
+}
+
+/**
  * Generate the question generation prompt
  */
 function buildQuestionPrompt(input: QuestionGeneratorInput): string {
-  const { topic, difficulty, profile, resume } = input;
+  const { topic, difficulty, profile, resume, followUpContext } = input;
 
   const profileContext = buildProfileContext(profile);
   const resumeContext = buildResumeContext(resume);
   const difficultyDesc = getDifficultyDescription(difficulty);
+  const weakAreasContext = buildWeakAreasContext(followUpContext);
 
   return `You are an expert system design interview question generator for top tech companies (FAANG+).
 
@@ -130,7 +179,7 @@ ${resumeContext}
 - Difficulty Level: ${difficulty.toUpperCase()}
 - ${difficultyDesc}
 - Total Interview Duration: 45 minutes
-
+${weakAreasContext}
 ## Question Generation Guidelines
 
 1. **Personalization**: Tailor questions to the candidate's skills and experience level.

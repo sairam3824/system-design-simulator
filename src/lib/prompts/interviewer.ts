@@ -1,3 +1,6 @@
+import { PersonalitySettings, AdaptedPersonality } from "../ai-personality-adapter";
+import { FollowUpContext, generateFollowUpPromptAddition } from "../followup-engine";
+
 export const INTERVIEW_PHASES = [
   {
     id: "requirements",
@@ -152,6 +155,20 @@ Only use these phase IDs: requirements, high-level, deep-dive, scalability, wrap
 - DO manage time - transition phases appropriately
 - KEEP responses concise - 2-4 sentences, then ask 1-2 questions
 
+## CRITICAL: Phase Boundary Enforcement
+
+**YOU MUST STRICTLY STAY WITHIN THE CURRENT PHASE. DO NOT JUMP AHEAD OR GO BACKWARDS.**
+
+- **In Requirements Phase (45:00-37:00)**: ONLY ask about scale, functional/non-functional requirements, priorities. DO NOT ask about architecture, databases, or implementation details yet.
+- **In High-Level Design Phase (37:00-25:00)**: ONLY ask about overall architecture, main components, API design, and data flow. DO NOT dive into implementation details, algorithms, or schemas yet.
+- **In Deep Dive Phase (25:00-13:00)**: NOW you can ask about data models, algorithms, protocols, and implementation details. DO NOT ask about scalability or caching yet.
+- **In Scalability Phase (13:00-3:00)**: NOW you can ask about scaling strategies, caching, sharding, load balancing, and performance optimization.
+- **In Wrap-up Phase (3:00-0:00)**: Summarize, answer candidate questions, discuss any remaining concerns.
+
+**If the candidate jumps ahead** (e.g., talks about caching in requirements phase), acknowledge briefly but redirect: "That's an interesting point about caching, but let's first clarify the requirements. We'll discuss optimization strategies later."
+
+**If the candidate is stuck**, provide hints ONLY related to the current phase. Don't hint at future phases.
+
 ## Response Format
 
 Keep responses focused. React to their answer, provide brief feedback, then ask the next question. If transitioning phases, acknowledge the transition naturally.`;
@@ -245,6 +262,39 @@ export const getPhaseAnalysisPrompt = (phaseId: string, phaseName: string) => {
     .replace(/{{PHASE_NAME}}/g, phaseName)
     .replace(/{{PHASE_ID}}/g, phaseId)
     .replace(/{{PHASE_CRITERIA}}/g, phaseCriteria[phaseId] || "");
+};
+
+/**
+ * Get personalized interview prompt with personality adaptation and follow-up context
+ */
+export const getPersonalizedInterviewPrompt = (
+  topic: string,
+  difficulty: string,
+  personality: AdaptedPersonality,
+  followUpContext?: FollowUpContext
+): string => {
+  const difficultyGuide = {
+    easy: "Be more guiding and provide more hints. Focus on basic concepts. Allow more time for explanations.",
+    medium: "Balance between guidance and challenge. Standard FAANG interview depth.",
+    hard: "Be more challenging. Ask about edge cases, failure modes, and push for optimal solutions. Expect quick, precise answers.",
+  };
+
+  // Build the follow-up context section
+  const followUpSection = followUpContext
+    ? generateFollowUpPromptAddition(followUpContext)
+    : "";
+
+  return `${INTERVIEWER_SYSTEM_PROMPT}
+
+${personality.promptModifications}
+${followUpSection}
+## Current Interview
+
+**Topic:** ${topic}
+**Difficulty:** ${difficulty}
+**Approach:** ${difficultyGuide[difficulty as keyof typeof difficultyGuide] || difficultyGuide.medium}
+
+Begin the interview now. Introduce yourself as Bobby, briefly introduce the problem, and start with requirements clarification. Ask what clarifying questions they have about the system.`;
 };
 
 export const SCORING_PROMPT = `You are evaluating a complete 45-minute system design interview. Based on the entire conversation, give a final comprehensive evaluation.

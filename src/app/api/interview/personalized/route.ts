@@ -22,6 +22,13 @@ import {
   generatePersonalizedQuestions,
   buildPersonalizedInterviewerPrompt,
 } from "@/lib/question-generator";
+import { buildFollowUpContext } from "@/lib/followup-engine";
+import {
+  calculatePersonalityAdaptation,
+  getPerformanceCategory,
+} from "@/lib/ai-personality-adapter";
+import { calculatePerformanceMetrics } from "@/lib/analytics/performance-analytics";
+import { getPersonalizedInterviewPrompt } from "@/lib/prompts/interviewer";
 
 export async function POST(request: NextRequest) {
   try {
@@ -102,21 +109,32 @@ export async function POST(request: NextRequest) {
 
     const actualDifficulty = difficultyResult.calculatedDifficulty;
 
-    // 8. Generate personalized questions
+    // 8. Fetch performance analytics and build follow-up context
+    const [performanceMetrics, followUpContext, personalityAdaptation] = await Promise.all([
+      calculatePerformanceMetrics(session.user.id, 15),
+      buildFollowUpContext(session.user.id, topic),
+      calculatePersonalityAdaptation(session.user.id),
+    ]);
+
+    // 9. Generate personalized questions with follow-up context
     const questionSet = await generatePersonalizedQuestions({
       topic,
       difficulty: actualDifficulty,
       profile: profileData,
       resume: resumeData,
+      followUpContext,
+      userId: session.user.id,
     });
 
-    // 9. Build personalized interviewer prompt
-    const interviewerPrompt = buildPersonalizedInterviewerPrompt(
-      questionSet,
-      profileData
+    // 10. Build personalized interviewer prompt with personality adaptation
+    const interviewerPrompt = getPersonalizedInterviewPrompt(
+      topic,
+      actualDifficulty,
+      personalityAdaptation,
+      followUpContext
     );
 
-    // 10. Create interview record
+    // 11. Create interview record
     const interview = await prisma.interview.create({
       data: {
         userId: session.user.id,
@@ -127,7 +145,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // 11. Generate initial interviewer message using Ollama
+    // 12. Generate initial interviewer message using Ollama
     const initialCompletion = await ollamaChat({
       messages: [
         { role: "system", content: interviewerPrompt },
@@ -141,7 +159,7 @@ export async function POST(request: NextRequest) {
       initialCompletion.message?.content ||
       `Hey there! I'm Bobby, and I'll be your interviewer today. I'm excited to discuss ${topic} with you! Let's start with some clarifying questions - what's the first thing you'd want to understand about the requirements?`;
 
-    // 12. Save messages to database
+    // 13. Save messages to database
     await prisma.message.createMany({
       data: [
         {
@@ -157,7 +175,7 @@ export async function POST(request: NextRequest) {
       ],
     });
 
-    // 13. Return response
+    // 14. Return response with full personalization info
     return NextResponse.json({
       success: true,
       interview: {
@@ -176,11 +194,24 @@ export async function POST(request: NextRequest) {
         confidenceScore: difficultyResult.confidenceScore,
         breakdown: difficultyResult.breakdown,
         recommendations: difficultyResult.recommendations,
+        // New personalization fields
+        performanceCategory: personalityAdaptation.performanceCategory,
+        personalityAdaptation: personalityAdaptation.reasonForAdaptation,
+        weakAreasTargeted: followUpContext.weakPoints.map((wp) => wp.dimension),
+        hasHistory: followUpContext.hasHistory,
+        totalPastInterviews: followUpContext.totalPastInterviews,
+        adaptedDifficulty: followUpContext.adaptedDifficulty,
       },
       questionSet: {
         focusAreas: questionSet.focusAreas,
         personalizationNotes: questionSet.personalizationNotes,
         questionCount: questionSet.questions.length,
+      },
+      performanceContext: {
+        avgScore: performanceMetrics.overall.avgScore,
+        passRate: performanceMetrics.overall.passRate,
+        scoreTrend: performanceMetrics.overall.scoreTrend,
+        completedInterviews: performanceMetrics.overall.completedInterviews,
       },
     });
   } catch (error) {

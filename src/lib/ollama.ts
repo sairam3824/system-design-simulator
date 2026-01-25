@@ -2,14 +2,34 @@
  * Ollama Client for Local LLM Inference
  *
  * Uses Ollama running locally for faster interview interactions.
- * Default model: llama3 (8B)
+ *
+ * Models:
+ * - llama3 (8B): Default for system design interviews
+ * - codellama:7b: Specialized for coding challenges
  *
  * Make sure Ollama is running: ollama serve
- * Pull the model: ollama pull llama3
+ * Pull the models:
+ *   ollama pull llama3
+ *   ollama pull codellama:7b
  */
 
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
-const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "llama3";
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "llama3:8b";
+const OLLAMA_CODE_MODEL = process.env.OLLAMA_CODE_MODEL || "codellama:7b";
+
+// Model types for different use cases
+export type ModelType = "general" | "coding";
+
+// Get the appropriate model based on use case
+export function getModelForType(type: ModelType): string {
+  switch (type) {
+    case "coding":
+      return OLLAMA_CODE_MODEL;
+    case "general":
+    default:
+      return OLLAMA_MODEL;
+  }
+}
 
 export interface OllamaMessage {
   role: "system" | "user" | "assistant";
@@ -240,5 +260,32 @@ export const ollama = {
     },
   },
 };
+
+/**
+ * CodeLlama-specific chat for coding challenges
+ * Uses codellama:7b model optimized for code generation and analysis
+ */
+export async function codeLlamaChat(
+  options: Omit<OllamaCompletionOptions, "model">
+): Promise<OllamaResponse> {
+  return ollamaChat({
+    ...options,
+    model: OLLAMA_CODE_MODEL,
+  });
+}
+
+/**
+ * Check if CodeLlama model is available
+ */
+export async function checkCodeLlamaAvailable(): Promise<boolean> {
+  try {
+    const models = await listModels();
+    return models.some(
+      (m) => m.includes("codellama") || m.includes("code-llama")
+    );
+  } catch {
+    return false;
+  }
+}
 
 export default ollama;
