@@ -1,0 +1,1 @@
+hey calude, i can see text of analysis is mixing so divide the screen into 2 parts on onside show the transcript and on the other side i need the analysis, we need the analysis part to be highlighted as it is the importance of the interview

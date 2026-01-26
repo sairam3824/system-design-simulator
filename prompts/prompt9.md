@@ -1,0 +1,1 @@
+as we giving live interaction interview its better to use models locally, so i have installed ollama using brew install ollama and now use llama3 8B model instead of openai api for the interview section
