@@ -1,0 +1,1 @@
+let us implement the interview part, use native web browser store the transcripts if needed, use openai for the ai analysis and user can even send the messages with out speech but mic should be as default
