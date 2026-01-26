@@ -1,0 +1,1 @@
+coding page was created thats good, add scroller to the question palte as the end part of the question is missing and also we need set of questions for the coding test if the questions require more time then increase the time. And also time should start automatically and at the end of time it has to stop, end the test
