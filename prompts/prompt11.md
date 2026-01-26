@@ -1,0 +1,6 @@
+- performance api - track score progression over time, identify weak area
+- topic wise analysis - which system design topics need more practice
+- time analysis - how user spend time across interview process
+- follow up questions engine - ai remembers previous attem,pts and asks about past weak points
+- ai interview personalization - adjust ai personality based on user performance (eg. more encouraging if struggling)
+- interview replay - store and retrieved the full transcripts with time stamps and ai feedback
