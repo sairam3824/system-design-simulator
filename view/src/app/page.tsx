@@ -1,18 +1,48 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
 import { User, Mail, Phone, Globe, Linkedin, Github } from "lucide-react";
-import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export default async function HomePage() {
-  const session = await auth();
+export default function HomePage() {
+  const [showBanner, setShowBanner] = useState(true);
 
-  if (session?.user) {
-    redirect("/dashboard");
-  }
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowBanner(false);
+    }, 10000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* View Only Banner */}
+      {showBanner && (
+        <div className="fixed top-24 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-[800px] z-50 animate-in slide-in-from-top-20 fade-in duration-700">
+          <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 rounded-xl p-6 shadow-2xl border border-white/10 relative text-center">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border border-yellow-400/50">
+              VIEW ONLY
+            </div>
+
+            <p className="text-white text-lg md:text-xl font-medium leading-relaxed pt-2">
+              This is a view-only demo of the System Design Simulator.
+              Interactive features are currently disabled.
+            </p>
+            <p className="text-white/90 mt-2">
+              For full access or inquiries, please contact at
+            </p>
+            <a
+              href="mailto:sairam.maruri@gmail.com"
+              className="inline-block mt-2 text-white font-bold text-lg hover:underline decoration-white/50 underline-offset-4"
+            >
+              sairam.maruri@gmail.com
+            </a>
+          </div>
+        </div>
+      )}
+
       {/* Gradient overlay */}
       <div className="fixed inset-0 bg-gradient-to-br from-blue-950/20 via-background to-blue-900/10 pointer-events-none" />
 

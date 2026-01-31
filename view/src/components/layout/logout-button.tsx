@@ -8,7 +8,7 @@ export function LogoutButton() {
     <Button
       variant="ghost"
       size="sm"
-      onClick={() => signOut({ callbackUrl: "/login" })}
+      onClick={() => signOut({ callbackUrl: "/" })}
       className="gap-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors"
     >
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
