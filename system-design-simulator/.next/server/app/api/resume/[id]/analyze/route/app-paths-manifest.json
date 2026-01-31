@@ -1,0 +1,3 @@
+{
+  "/api/resume/[id]/analyze/route": "app/api/resume/[id]/analyze/route.js"
+}

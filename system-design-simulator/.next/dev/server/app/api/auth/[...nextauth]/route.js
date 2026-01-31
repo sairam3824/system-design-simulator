@@ -1,0 +1,11 @@
+var R=require("../../../../chunks/[turbopack]_runtime.js")("server/app/api/auth/[...nextauth]/route.js")
+R.c("server/chunks/[externals]__f1329923._.js")
+R.c("server/chunks/1418f_next_36f9f2c8._.js")
+R.c("server/chunks/1418f_@auth_core_4d362583._.js")
+R.c("server/chunks/1418f_jose_dist_webapi_93b7dc09._.js")
+R.c("server/chunks/1418f_@upstash_redis_f885b9c6._.js")
+R.c("server/chunks/[root-of-the-server]__4a392c63._.js")
+R.c("server/chunks/[root-of-the-server]__cb742040._.js")
+R.c("server/chunks/ff092__next-internal_server_app_api_auth_[___nextauth]_route_actions_01bdd22b.js")
+R.m("[project]/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/Documents/Git/system-design/system-design-simulator/src/app/api/auth/[...nextauth]/route.ts [app-route] (ecmascript)\" } [app-route] (ecmascript)")
+module.exports=R.m("[project]/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/Documents/Git/system-design/system-design-simulator/src/app/api/auth/[...nextauth]/route.ts [app-route] (ecmascript)\" } [app-route] (ecmascript)").exports

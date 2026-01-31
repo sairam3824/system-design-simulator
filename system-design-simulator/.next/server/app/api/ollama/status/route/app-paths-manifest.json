@@ -1,0 +1,3 @@
+{
+  "/api/ollama/status/route": "app/api/ollama/status/route.js"
+}

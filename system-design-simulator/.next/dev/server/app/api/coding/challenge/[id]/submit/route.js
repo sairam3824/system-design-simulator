@@ -1,0 +1,10 @@
+var R=require("../../../../../../chunks/[turbopack]_runtime.js")("server/app/api/coding/challenge/[id]/submit/route.js")
+R.c("server/chunks/[externals]__213b5150._.js")
+R.c("server/chunks/1418f_next_84a7eb4e._.js")
+R.c("server/chunks/1418f_@auth_core_4d362583._.js")
+R.c("server/chunks/1418f_jose_dist_webapi_93b7dc09._.js")
+R.c("server/chunks/[root-of-the-server]__2db4b8a2._.js")
+R.c("server/chunks/[root-of-the-server]__b795f166._.js")
+R.c("server/chunks/a5624_server_app_api_coding_challenge_[id]_submit_route_actions_3a309d8f.js")
+R.m("[project]/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/Documents/Git/system-design/system-design-simulator/src/app/api/coding/challenge/[id]/submit/route.ts [app-route] (ecmascript)\" } [app-route] (ecmascript)")
+module.exports=R.m("[project]/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/Documents/Git/system-design/system-design-simulator/src/app/api/coding/challenge/[id]/submit/route.ts [app-route] (ecmascript)\" } [app-route] (ecmascript)").exports

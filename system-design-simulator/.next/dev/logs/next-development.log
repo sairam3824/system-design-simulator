@@ -1,0 +1,290 @@
+[00:00:01.183] Server  LOG     ✓ Ready in 939ms
+[00:00:04.810] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:05.315] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:00:05.315] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:00:05.315] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:00:05.315] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:00:05.315] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:00:05.315] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:04:10.888] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:21:05.136] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:25:11.140] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:26:16.362] Server  LOG     [LLM] Attempting Ollama completion...
+[00:26:25.747] Server  LOG     [LLM] Ollama completion successful
+[00:28:35.029] Server  LOG     [LLM] Attempting Ollama streaming...
+[00:28:36.294] Server  LOG     [LLM] Ollama streaming started
+[00:29:00.411] Server  LOG     [LLM] Attempting Ollama streaming...
+[00:29:01.573] Server  LOG     [LLM] Ollama streaming started
+[00:30:20.177] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:30:20.177] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:30:20.177] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:30:20.177] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:30:20.177] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:30:20.177] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[02:56:35.212] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[03:02:34.322] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[03:02:57.847] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[03:03:13.959] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[03:35:01.411] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[03:36:30.562] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:36:30.562] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:36:30.562] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:36:30.562] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:36:30.562] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:36:30.562] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:37:07.221] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[03:37:07.542] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:37:07.542] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:37:07.542] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:37:07.542] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:37:07.542] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:37:07.542] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:17:29.290] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[05:17:29.529] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:17:29.529] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:17:29.529] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:17:29.529] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:17:29.529] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:17:29.529] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:17:35.514] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[11:58:52.202] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[11:59:01.735] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[11:59:01.937] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[11:59:01.937] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[11:59:01.937] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[11:59:01.937] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[11:59:01.937] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[11:59:01.937] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:12:47.669] Server  LOG     ✓ Compiled in 493ms
+[25:13:30.506] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[25:17:00.975] Server  ERROR   [auth][error] CredentialsSignin: Read more at https://errors.authjs.dev#credentialssignin
+[25:17:00.976] Server  ERROR       at Module.callback (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/.next/dev/server/chunks/1418f_@auth_core_4d362583._.js:4314:30)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async AuthInternal (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/.next/dev/server/chunks/1418f_@auth_core_4d362583._.js:5148:24)
+    at async Auth (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/.next/dev/server/chunks/1418f_@auth_core_4d362583._.js:5370:34)
+    at async AppRouteRouteModule.do (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)
+    at async AppRouteRouteModule.handle (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)
+    at async responseGenerator (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/.next/dev/server/chunks/1418f_next_36f9f2c8._.js:16653:38)
+    at async AppRouteRouteModule.handleResponse (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:187713)
+    at async handleResponse (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/.next/dev/server/chunks/1418f_next_36f9f2c8._.js:16716:32)
+    at async Module.handler (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/.next/dev/server/chunks/1418f_next_36f9f2c8._.js:16769:13)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/base-server.js:1422:9)
+    at async DevServer.renderPageComponent (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/base-server.js:1524:32)
+    at async DevServer.pipeImpl (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/base-server.js:1018:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/next-server.js:395:17)
+    at async DevServer.handleRequestImpl (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/base-server.js:909:17)
+    at async /Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/dev/next-dev-server.js:387:20
+    at async Span.traceAsyncFn (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/trace/trace.js:157:20)
+    at async DevServer.handleRequest (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/dev/next-dev-server.js:383:24)
+    at async invokeRender (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/lib/router-server.js:248:21)
+    at async handleRequest (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/lib/router-server.js:447:24)
+    at async requestHandlerImpl (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/lib/router-server.js:496:13)
+    at async Server.requestListener (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/lib/start-server.js:226:13)
+[25:17:24.639] Server  ERROR   [auth][error] CredentialsSignin: Read more at https://errors.authjs.dev#credentialssignin
+[25:17:24.639] Server  ERROR       at Module.callback (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/.next/dev/server/chunks/1418f_@auth_core_4d362583._.js:4314:30)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async AuthInternal (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/.next/dev/server/chunks/1418f_@auth_core_4d362583._.js:5148:24)
+    at async Auth (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/.next/dev/server/chunks/1418f_@auth_core_4d362583._.js:5370:34)
+    at async AppRouteRouteModule.do (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)
+    at async AppRouteRouteModule.handle (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)
+    at async responseGenerator (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/.next/dev/server/chunks/1418f_next_36f9f2c8._.js:16653:38)
+    at async AppRouteRouteModule.handleResponse (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:187713)
+    at async handleResponse (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/.next/dev/server/chunks/1418f_next_36f9f2c8._.js:16716:32)
+    at async Module.handler (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/.next/dev/server/chunks/1418f_next_36f9f2c8._.js:16769:13)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/base-server.js:1422:9)
+    at async DevServer.renderPageComponent (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/base-server.js:1524:32)
+    at async DevServer.pipeImpl (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/base-server.js:1018:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/next-server.js:395:17)
+    at async DevServer.handleRequestImpl (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/base-server.js:909:17)
+    at async /Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/dev/next-dev-server.js:387:20
+    at async Span.traceAsyncFn (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/trace/trace.js:157:20)
+    at async DevServer.handleRequest (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/dev/next-dev-server.js:383:24)
+    at async invokeRender (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/lib/router-server.js:248:21)
+    at async handleRequest (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/lib/router-server.js:447:24)
+    at async requestHandlerImpl (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/lib/router-server.js:496:13)
+    at async Server.requestListener (/Users/sairammaruri/Documents/Git/system-design/system-design-simulator/node_modules/next/dist/server/lib/start-server.js:226:13)
+[25:17:28.165] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:17:28.165] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:17:28.165] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:17:28.165] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:17:28.165] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:17:28.165] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:17:40.728] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[25:17:40.943] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:17:40.943] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:17:40.943] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:17:40.943] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:17:40.943] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:17:40.943] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:19:11.941] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:19:11.941] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:19:11.941] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:19:11.941] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:19:11.941] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:19:11.941] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[25:28:48.428] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[25:29:15.339] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold

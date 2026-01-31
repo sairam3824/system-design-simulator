@@ -1,0 +1,3 @@
+{
+  "/api/coding/challenge/[id]/submit/route": "app/api/coding/challenge/[id]/submit/route.js"
+}

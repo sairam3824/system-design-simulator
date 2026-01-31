@@ -1,0 +1,10 @@
+var R=require("../../../../../chunks/[turbopack]_runtime.js")("server/app/api/interview/[id]/end/route.js")
+R.c("server/chunks/[root-of-the-server]__3d9a38d9._.js")
+R.c("server/chunks/Documents_Git_system-design_system-design-simulator_2ac0dfb0._.js")
+R.c("server/chunks/Documents_Git_system-design_system-design-simulator_src_lib_a79c29e7._.js")
+R.c("server/chunks/[root-of-the-server]__e75db9d0._.js")
+R.c("server/chunks/1418f_openai_515c5383._.js")
+R.c("server/chunks/Documents_Git_system-design_system-design-simulator_c82be992._.js")
+R.c("server/chunks/ff092__next-internal_server_app_api_interview_[id]_end_route_actions_5e3dc540.js")
+R.m(90391)
+module.exports=R.m(90391).exports

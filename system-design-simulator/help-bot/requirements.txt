@@ -1,0 +1,19 @@
+# Keep versions flexible for compatibility
+fastapi
+uvicorn
+python-dotenv
+pydantic>=2.0.0
+httpx
+slowapi
+
+# LangChain
+langchain
+langchain-community
+
+# Embeddings and Vector Store
+sentence-transformers
+faiss-cpu
+
+# ML (usually already installed)
+torch
+transformers
