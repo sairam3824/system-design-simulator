@@ -2,6 +2,8 @@
 
 > An AI-powered platform for mastering system design interviews, coding challenges, and resume optimization -- all running locally on your machine.
 
+**Live Demo:** [systemdesign.saiii.in](https://systemdesign.saiii.in)
+
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
