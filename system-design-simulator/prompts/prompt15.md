@@ -1,0 +1,1 @@
+Now i need an help bot and implement using RAG, use the Langchain framework. For the vector database use FAISS or chromadb and make me the .md files and use them as database. For this implementation use all mini 1v2 embeddings model and also mistral as the brain. I have installed both the models
