@@ -1,6 +1,6 @@
 # System Design Simulator
 
-> An AI-powered platform for mastering system design interviews, coding challenges, and resume optimization -- all running locally on your machine.
+> An AI-powered platform for mastering system design interviews, coding challenges, and resume optimization -- built entirely with AI using 15 prompts in under 6 hours.
 
 **Live Demo:** [systemdesign.saiii.in](https://systemdesign.saiii.in)
 
@@ -13,66 +13,35 @@
 
 ---
 
-## Table of Contents
-
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Prerequisites](#prerequisites)
-- [Getting Started](#getting-started)
-- [Microservices](#microservices)
-- [Project Structure](#project-structure)
-- [API Reference](#api-reference)
-- [Database Schema](#database-schema)
-- [AI Models & Strategy](#ai-models--strategy)
-- [Scoring & Evaluation](#scoring--evaluation)
-- [Docker Support](#docker-support)
-- [Development](#development)
-- [Contributing](#contributing)
-- [Roadmap](#roadmap)
-- [License](#license)
-- [Acknowledgments](#acknowledgments)
-
----
-
-## Overview
+## What is this?
 
 System Design Simulator is a full-stack interview preparation platform that combines local LLMs, NLP-based resume analysis, and a RAG-powered help assistant to give software engineers a realistic, private, and cost-free way to prepare for FAANG-level technical interviews.
 
 **What sets it apart:**
 
-- **Privacy-first** -- interviews run entirely on local LLMs via Ollama; your data never leaves your machine.
-- **Hybrid AI** -- automatically falls back from Ollama to OpenAI when local models are unavailable.
-- **FAANG-grade scoring** -- evaluates across the same 6 dimensions used by top tech companies.
-- **Three integrated services** -- a Next.js app, a Python RAG help bot, and a Python resume analyzer work together as a cohesive platform.
+- **Privacy-first** -- interviews run entirely on local LLMs via Ollama; your data never leaves your machine
+- **Hybrid AI** -- automatically falls back from Ollama to OpenAI when local models are unavailable
+- **FAANG-grade scoring** -- evaluates across the same 6 dimensions used by top tech companies
+- **Three integrated services** -- a Next.js app, a Python RAG help bot, and a Python resume analyzer work together as a cohesive platform
+- **Built with AI** -- every line of code was generated using Claude Code across 15 iterative prompts
 
 ---
 
 ## Architecture
 
-```
-                         +---------------------------+
-                         |        Browser Client      |
-                         |   (Next.js / React 19 UI)  |
-                         +-------------+-------------+
-                                       |
-                         +-------------v-------------+
-                         |     Next.js API Routes     |
-                         |   (Auth, Interview, Code,  |
-                         |   Analytics, Resume, etc.)  |
-                         +--+----------+----------+--+
-                            |          |          |
-               +------------v--+  +----v----+  +--v--------------+
-               |   Ollama       |  | SQLite  |  |  Python         |
-               |   (Local LLMs) |  | (Prisma)|  |  Microservices  |
-               |                |  |         |  |                 |
-               | - Llama 3 (8B) |  | dev.db  |  | - Help Bot      |
-               | - CodeLlama 7B |  |         |  |   (RAG/FAISS)   |
-               +----------------+  +---------+  | - Resume Matcher |
-                                                 |   (spaCy/NLP)   |
-                                                 +-----------------+
-```
+![System Design Simulator - Architecture Flowchart](flowchart-conference.png)
+
+The platform follows a **3-service microservice architecture** with a local-first AI strategy:
+
+| Layer | Components |
+|-------|-----------|
+| **Clients** | Browser (Full App), Browser (View-Only Demo) |
+| **Next.js App** | UI Pages (App Router), API Routes (Auth, Interview, Coding, Resume, Analytics, Help), NextAuth, Rate Limiter |
+| **Core AI** | LLM Router (Ollama → OpenAI fallback), Prompting & Scoring Logic |
+| **Microservices** | Help Bot (RAG API), Resume Matcher (NLP API) |
+| **Data & External** | Ollama (Local LLMs), OpenAI API (Optional), SQLite (Prisma), Uploads (Resume PDFs), Upstash Redis (Cache + Rate Limits), FAISS Vector Store (Help Docs) |
+
+> Solid lines = primary flow. Dashed lines = optional fallback.
 
 ---
 
@@ -236,7 +205,7 @@ ollama pull mistral     # for help bot
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/system-design-simulator.git
+git clone https://github.com/sairammaruri/system-design-simulator.git
 cd system-design-simulator
 ```
 
@@ -336,8 +305,6 @@ A FastAPI service that provides contextual help using Retrieval-Augmented Genera
 
 **Stack:** FastAPI, LangChain, FAISS, sentence-transformers (all-MiniLM-L6-v2), Mistral via Ollama
 
-**Documentation corpus:** 9 markdown files covering getting started, interview structure, coding challenges, resume features, profile management, analytics, troubleshooting, and FAQs.
-
 ### Resume Matcher (`/resume-matcher`)
 
 A FastAPI service that extracts and analyzes resume PDFs.
@@ -366,7 +333,7 @@ system-design-simulator/
 │   ├── app/                        # Next.js App Router
 │   │   ├── (auth)/                 # Login & registration pages
 │   │   ├── (dashboard)/            # Dashboard, analytics, leaderboard
-│   │   ├── api/                    # 30+ API route handlers
+│   │   ├── api/                    # 34+ API route handlers
 │   │   │   ├── analytics/          # Performance, progression, topics, time
 │   │   │   ├── auth/               # NextAuth + registration
 │   │   │   ├── coding/             # Challenges, submissions, tests, problems
@@ -402,11 +369,12 @@ system-design-simulator/
 │   └── generated/prisma/           # Auto-generated Prisma client
 ├── prisma/
 │   └── schema.prisma               # Database schema (11 models)
-├── prompts/                        # 14 AI system prompts (markdown)
+├── prompts/                        # 15 AI system prompts (markdown)
 ├── help-bot/                       # RAG help assistant (Python/FastAPI)
 ├── resume-matcher/                 # Resume analysis (Python/FastAPI)
 ├── uploads/                        # User-uploaded resume files
 ├── public/                         # Static assets
+├── flowchart-conference.png        # Architecture diagram
 ├── docker-compose.yml              # Docker config for microservices
 ├── package.json                    # Node.js dependencies
 └── tsconfig.json                   # TypeScript configuration
@@ -521,7 +489,7 @@ All core interview and coding features run on **local LLMs** via Ollama, providi
 - **Offline capable** -- works without internet after initial model download
 - **Low latency** -- no network round-trips
 
-### Model routing
+### Model Routing
 
 | Use Case | Primary Model | Fallback |
 |----------|---------------|----------|
@@ -532,9 +500,9 @@ All core interview and coding features run on **local LLMs** via Ollama, providi
 | Help bot (RAG) | Mistral via Ollama | -- |
 | Document embeddings | all-MiniLM-L6-v2 | -- |
 
-### Prompt engineering
+### Prompt Engineering
 
-14 curated system prompts (in `/prompts/`) define the AI interviewer's behavior, covering personality, phase structure, evaluation criteria, and difficulty-specific guidance.
+15 curated system prompts (in `/prompts/`) define the AI interviewer's behavior, covering personality, phase structure, evaluation criteria, difficulty calibration, adaptive questioning, and model routing.
 
 ---
 
@@ -603,15 +571,29 @@ npx prisma db push     # Push schema changes to database
 npx prisma studio      # Open database GUI
 ```
 
-### Adding new interview topics
+---
 
-1. Add the topic to the interview creation flow in `/src/app/api/interview/route.ts`
-2. Optionally add topic-specific prompts in `/prompts/`
+## How It Was Built
 
-### Adding new coding problem categories
+This entire platform was built using **Claude Code** with **15 iterative prompts** in under 6 hours. Every line of code -- frontend, backend, microservices, prompts, and configuration -- was AI-generated.
 
-1. Create problems in `/src/app/api/coding/problems/route.ts`
-2. Update category lists in `/src/lib/coding/problem-generator.ts`
+The 15 prompts covered:
+
+1. Initial platform concept & core architecture
+2. Resume analysis integration with Docker
+3. Interview implementation with speech & text input
+4. Structured 45-50 min interview sessions with AI evaluation
+5. Scoring calibration & accuracy improvements
+6. Split-screen UI for transcript & analysis
+7. Sidebar & dashboard redesign
+8. Backend intelligence -- adaptive difficulty engine
+9. Local LLM migration (Ollama/Llama 3)
+10. UX improvements -- auto-scroll during interviews
+11. Analytics engine -- performance tracking & interview replay
+12. Coding challenge platform -- multi-language support
+13. Coding UX -- timed tests & auto-submit
+14. Model routing -- CodeLlama for coding, Llama 3 for interviews
+15. RAG help assistant -- LangChain + FAISS + Mistral
 
 ---
 
@@ -629,7 +611,7 @@ Contributions are welcome. Please follow these steps:
 
 ## Roadmap
 
-- [ ] Additional Ollama model support (Mistral, Phi, DeepSeek, Qwen)
+- [ ] Additional Ollama model support (Phi, DeepSeek, Qwen)
 - [ ] Behavioral interview simulation
 - [ ] Mock interview scheduling with peers
 - [ ] Video/audio recording of interview sessions
@@ -646,10 +628,13 @@ Contributions are welcome. Please follow these steps:
 
 This project is licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for details.
 
+Copyright 2026 System Design Simulator
+
 ---
 
 ## Acknowledgments
 
+- [Claude Code](https://claude.ai/) -- AI-powered development
 - [Next.js](https://nextjs.org/) -- React framework
 - [Ollama](https://ollama.ai/) -- Local LLM runtime
 - [Meta Llama 3](https://llama.meta.com/) -- 8B language model for interviews
