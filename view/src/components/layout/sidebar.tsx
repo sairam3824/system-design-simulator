@@ -88,7 +88,7 @@ const navigation = [
   },
 ];
 
-export function Sidebar() {
+export function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
 
   return (
@@ -118,6 +118,7 @@ export function Sidebar() {
               <Link
                 key={item.name}
                 href={item.href}
+                onClick={onClose}
                 className={cn(
                   "group relative flex items-center gap-3 px-4 py-3 rounded-full text-sm font-medium transition-all duration-300",
                   isActive
