@@ -81,9 +81,9 @@ export function ChallengeWorkspace({
     const isCompleted = challenge.status === "completed";
 
     return (
-        <div className="flex-1 flex overflow-hidden h-full">
+        <div className="flex-1 flex flex-col md:flex-row overflow-hidden h-full">
             {/* Left Panel - Problem/Results */}
-            <div className="w-[45%] border-r border-border flex flex-col">
+            <div className="w-full md:w-[45%] border-b md:border-b-0 md:border-r border-border flex flex-col min-h-0 h-1/2 md:h-auto">
                 <Tabs value={activeTab} onValueChange={onTabChange} className="flex-1 flex flex-col min-h-0">
                     <TabsList className="m-2">
                         <TabsTrigger value="problem">Problem</TabsTrigger>

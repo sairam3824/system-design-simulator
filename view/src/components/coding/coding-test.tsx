@@ -22,10 +22,10 @@ export function CodingTest({
     return (
         <div className="h-screen flex flex-col bg-background">
             {/* Global Header */}
-            <div className="border-b border-border bg-card px-4 py-3 flex items-center justify-between shadow-sm z-10">
+            <div className="border-b border-border bg-card px-4 py-3 flex flex-wrap items-center justify-between gap-2 shadow-sm z-10">
                 <div className="flex items-center gap-4">
-                    <h1 className="font-bold text-lg">Coding Assessment (View Only)</h1>
-                    <div className="flex gap-2">
+                    <h1 className="font-bold text-base md:text-lg">Coding Assessment (View Only)</h1>
+                    <div className="hidden md:flex gap-2">
                         {challenges.map((_, idx) => (
                             <div
                                 key={idx}
@@ -38,24 +38,40 @@ export function CodingTest({
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-md font-mono font-bold text-lg bg-background border-border border text-muted-foreground">
-                        <Clock className="h-5 w-5" />
+                <div className="flex items-center gap-2 md:gap-4">
+                    <div className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-md font-mono font-bold text-base md:text-lg bg-background border-border border text-muted-foreground">
+                        <Clock className="h-4 w-4 md:h-5 md:w-5" />
                         00:00
                     </div>
 
-                    <Button variant="destructive" disabled>
+                    <Button variant="destructive" size="sm" disabled className="hidden sm:inline-flex">
                         Finish Test
                     </Button>
-                    <Button variant="outline" onClick={() => router.push("/coding")}>
+                    <Button variant="outline" size="sm" onClick={() => router.push("/coding")}>
                         Exit View
                     </Button>
                 </div>
             </div>
 
-            <div className="flex-1 flex overflow-hidden">
-                {/* Sidebar */}
-                <div className="w-64 border-r border-border bg-muted/10 flex flex-col">
+            <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+                {/* Mobile horizontal question nav */}
+                <div className="md:hidden flex gap-2 p-2 border-b border-border overflow-x-auto flex-shrink-0">
+                    {challenges.map((c, idx) => (
+                        <button
+                            key={c.id}
+                            onClick={() => setActiveChallengeIndex(idx)}
+                            className={`whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-medium transition-all border ${activeChallengeIndex === idx
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : "bg-muted/50 border-transparent text-muted-foreground hover:text-foreground"
+                                }`}
+                        >
+                            Q{idx + 1}: {c.title}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Desktop sidebar */}
+                <div className="hidden md:flex w-64 border-r border-border bg-muted/10 flex-col">
                     <div className="p-4 border-b border-border">
                         <h2 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-3">
                             Questions
