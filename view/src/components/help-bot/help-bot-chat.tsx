@@ -11,7 +11,7 @@ export function HelpBotChat({ isOpen, onClose }: { isOpen: boolean; onClose: () 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 w-[400px] h-[500px] bg-background border rounded-lg shadow-xl flex flex-col overflow-hidden">
+    <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] sm:w-[400px] h-[70vh] sm:h-[500px] bg-background border rounded-lg shadow-xl flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/50">
         <div className="flex items-center gap-2">
