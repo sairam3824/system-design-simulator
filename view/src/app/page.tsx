@@ -56,11 +56,11 @@ export default function HomePage() {
           </div>
           System Design Simulator
         </h1>
-        <div className="flex gap-4">
-          <Button variant="ghost" asChild>
+        <div className="flex gap-2 sm:gap-4">
+          <Button variant="ghost" size="sm" asChild className="sm:size-default">
             <Link href="/login">Sign In</Link>
           </Button>
-          <Button asChild className="bg-primary hover:bg-primary/90">
+          <Button size="sm" asChild className="bg-primary hover:bg-primary/90 sm:size-default">
             <Link href="/register">Get Started</Link>
           </Button>
         </div>
@@ -127,7 +127,7 @@ export default function HomePage() {
               AI-Powered Interview Practice
             </div>
 
-            <h2 className="text-5xl font-bold text-foreground mb-6 leading-tight">
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
               Ace Your <span className="text-primary">FAANG</span> System Design Interview
             </h2>
             <p className="text-xl text-muted-foreground mb-8">
@@ -232,7 +232,7 @@ export default function HomePage() {
             </div>
 
             {/* Plus Tier */}
-            <div className="bg-card rounded-xl p-8 border-2 border-primary/20 hover:border-primary transition-colors flex flex-col relative transform scale-110 shadow-2xl z-10">
+            <div className="bg-card rounded-xl p-8 border-2 border-primary/20 hover:border-primary transition-colors flex flex-col relative md:transform md:scale-110 shadow-2xl z-10">
               <div className="absolute top-0 right-0 -mr-2 -mt-2 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">POPULAR</div>
               <h4 className="text-xl font-semibold text-foreground mb-2">Plus</h4>
               <div className="text-4xl font-bold text-primary mb-6">$19<span className="text-base font-normal text-muted-foreground">/mo</span></div>
@@ -298,7 +298,7 @@ export default function HomePage() {
 
         {/* Stats Section */}
         {/* Stats Section */}
-        <div className="mt-32 grid md:grid-cols-4 gap-8">
+        <div className="mt-32 grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
             { value: "500+", label: "Practice Sessions" },
             { value: "95%", label: "Pass Rate Improvement" },
