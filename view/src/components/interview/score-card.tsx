@@ -302,7 +302,7 @@ export function ScoreCard({ score, completedPhases = [] }: ScoreCardProps) {
       </Card>
 
       {/* Feedback Summary - Strengths & Improvements */}
-      <div className="grid gap-4 grid-cols-2">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
         {/* Strengths */}
         <Card className="border shadow-sm border-emerald-500/20">
           <CardHeader className="pb-2 pt-4">

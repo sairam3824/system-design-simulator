@@ -42,9 +42,9 @@ export function InterviewChat({
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-background via-background to-primary/5">
       {/* Header */}
-      <header className="border-b border-border/50 backdrop-blur-sm bg-background/80 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <header className="border-b border-border/50 backdrop-blur-sm bg-background/80 px-4 md:px-6 py-4">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-2 md:gap-4">
             <Link href="/dashboard">
               <Button variant="ghost" size="sm" className="gap-2">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
