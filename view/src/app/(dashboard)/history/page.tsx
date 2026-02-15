@@ -193,7 +193,7 @@ export default function HistoryPage() {
                           </div>
                         </div>
 
-                        <div className="mt-4 md:mt-0 md:ml-6 flex items-center justify-between md:justify-end gap-6 min-w-[300px]">
+                        <div className="mt-4 md:mt-0 md:ml-6 flex items-center justify-between md:justify-end gap-6 min-w-0">
                           {interview.score ? (
                             <>
                               <div className="flex-1 space-y-1.5">
@@ -315,7 +315,7 @@ export default function HistoryPage() {
                           </div>
                         </div>
 
-                        <div className="mt-4 md:mt-0 md:ml-6 flex items-center justify-between md:justify-end gap-6 min-w-[300px]">
+                        <div className="mt-4 md:mt-0 md:ml-6 flex items-center justify-between md:justify-end gap-6 min-w-0">
                           {challenge.score ? (
                             <>
                               <div className="flex-1 space-y-1.5">
