@@ -1,0 +1,160 @@
+================================================================================
+  HOW TO RUN THIS APPLICATION LOCALLY
+================================================================================
+
+This project has 3 services:
+  1. system-design-simulator  — Main Next.js app          (port 3000)
+  2. resume-matcher            — Python FastAPI service    (port 8000)
+  3. help-bot                  — Python RAG service        (port 8001)
+
+================================================================================
+  PREREQUISITES
+================================================================================
+
+  - Node.js >= 18
+  - npm
+  - Python >= 3.10
+  - Ollama (https://ollama.com) — for local LLM features
+  - Docker (optional, for running resume-matcher via Docker)
+
+================================================================================
+  AI MODELS USED
+================================================================================
+
+  OpenAI models (cloud, requires API key):
+    - gpt-4o-mini     → Resume analysis (resume-matcher service) and
+                         fallback interview chat (when Ollama is unavailable)
+
+  Ollama models (local, pull before running):
+    - llama3          → Interview chat in the main app
+    - mistral         → Help bot RAG service (Q&A about the app)
+
+  Embedding model (auto-downloaded by help-bot on first run):
+    - sentence-transformers/all-MiniLM-L6-v2  → Vector search in help-bot
+
+  To pull Ollama models:
+    ollama pull llama3
+    ollama pull mistral
+
+================================================================================
+  1. MAIN APP — system-design-simulator (Next.js)
+================================================================================
+
+  Step 1: Set up environment variables
+  -------------------------------------
+    cd system-design-simulator
+    cp .env .env.local       # or edit .env directly
+
+    Required variables:
+      DATABASE_URL        — SQLite file path (default: "file:./dev.db", works as-is)
+      NEXTAUTH_SECRET     — Any random secret string
+      NEXTAUTH_URL        — http://localhost:3000
+      AUTH_TRUST_HOST     — true
+
+    Optional (enables AI features):
+      OPENAI_API_KEY      — Your OpenAI key (for resume scoring & interview fallback)
+      OPENAI_MODEL        — gpt-4o-mini (default)
+      OLLAMA_BASE_URL     — http://localhost:11434 (default, for interview chat)
+      OLLAMA_MODEL        — llama3 (default)
+      UPSTASH_REDIS_REST_URL    — Leave empty to disable Redis caching
+      UPSTASH_REDIS_REST_TOKEN  — Leave empty to disable Redis caching
+      HELP_BOT_URL        — http://localhost:8001 (default, for help bot)
+
+  Step 2: Install dependencies
+  ----------------------------
+    npm install
+
+  Step 3: Set up the database
+  ---------------------------
+    npx prisma generate
+    npx prisma migrate deploy
+
+    (Optional) Seed coding problems:
+    npx ts-node prisma/seed-coding-problems.ts
+
+  Step 4: Run the app
+  -------------------
+    npm run dev
+
+    App is available at: http://localhost:3000
+
+================================================================================
+  2. RESUME MATCHER SERVICE — Python FastAPI (port 8000)
+================================================================================
+
+  This service parses PDF resumes and scores them using OpenAI + spacy.
+  Requires OPENAI_API_KEY for AI-powered scoring; falls back to rule-based
+  scoring if the key is not set.
+
+  Option A: Run with Docker (recommended)
+  ----------------------------------------
+    cd system-design-simulator
+    OPENAI_API_KEY=<your-key> docker-compose up --build resume-matcher
+
+  Option B: Run manually
+  ----------------------
+    cd system-design-simulator/resume-matcher
+    python -m venv venv
+    source venv/bin/activate          # Windows: venv\Scripts\activate
+    pip install -r requirements.txt
+    OPENAI_API_KEY=<your-key> uvicorn main:app --host 0.0.0.0 --port 8000
+
+    Service available at: http://localhost:8000
+    Health check:         http://localhost:8000/health
+
+================================================================================
+  3. HELP BOT SERVICE — Python RAG FastAPI (port 8001)
+================================================================================
+
+  This service provides a context-aware Q&A bot about the application using
+  a local Ollama model (mistral) + FAISS vector search.
+
+  Requires Ollama to be running with the mistral model pulled:
+    ollama pull mistral
+    ollama serve           # starts Ollama if not already running
+
+  Run the service:
+  ----------------
+    cd system-design-simulator/help-bot
+    python -m venv venv
+    source venv/bin/activate          # Windows: venv\Scripts\activate
+    pip install -r requirements.txt
+    python main.py
+
+    Service available at: http://localhost:8001
+    Health check:         http://localhost:8001/health
+
+  Note: On first startup the service downloads the embedding model
+  (all-MiniLM-L6-v2) and builds the FAISS vector index from docs/.
+  This may take a minute.
+
+================================================================================
+  QUICK START (all services, 4 terminals)
+================================================================================
+
+  Terminal 1 — Ollama:
+    ollama serve
+
+  Terminal 2 — Main app:
+    cd system-design-simulator && npm install && npx prisma generate && npx prisma migrate deploy && npm run dev
+
+  Terminal 3 — Resume matcher:
+    cd system-design-simulator/resume-matcher && pip install -r requirements.txt && uvicorn main:app --port 8000
+
+  Terminal 4 — Help bot:
+    cd system-design-simulator/help-bot && pip install -r requirements.txt && python main.py
+
+================================================================================
+  VIEW-ONLY APP (optional)
+================================================================================
+
+  The view/ directory contains a standalone read-only Next.js app with no
+  backend dependencies.
+
+    cd view
+    npm install
+    npm run dev
+
+    App available at: http://localhost:3000 (or next available port)
+
+================================================================================
